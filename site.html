@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ВИДИМ ДЕНЬГИ — управленческий учёт и BI-аналитика под ключ</title>
+<meta name="description" content="Управленческий учёт и 25+ отчётов на промышленной BI-платформе Yandex DataLens. Внедряем под ключ.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --graphite:#202020; --canvas:#ffffff; --ash:#efefef; --fog:#f5f5f5;
+  --ivory:#ebe6dd; --steel:#4d4d4d; --slate:#828282; --mist:#e8e8e8;
+  --ember:#ff682c; --brass:#816729;
+  --f-display:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --f-body:'Inter', ui-sans-serif, system-ui, sans-serif;
+  --max:1200px; --sec-gap:80px; --card-pad:40px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--f-body);background:var(--canvas);color:var(--graphite);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+h1,h2,h3,h4,.disp{font-family:var(--f-display);font-weight:400;letter-spacing:-0.02em}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--mist)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{font-family:var(--f-display);font-size:18px;letter-spacing:-0.02em;display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:2px 0 0;background:var(--ember)}
+.pill{display:flex;align-items:center;gap:22px;background:var(--ash);
+  border-radius:200px;padding:9px 22px}
+.pill a{font-family:var(--f-display);font-size:15px;color:var(--graphite);opacity:.85}
+.pill a:hover{opacity:1;color:var(--ember)}
+.nav-cta{display:flex;align-items:center;gap:16px}
+.lang{font-family:var(--f-display);font-size:15px;color:var(--slate)}
+.btn{font-family:var(--f-display);font-size:15px;padding:10px 20px;border-radius:0;
+  display:inline-block;transition:.2s;letter-spacing:-0.02em;cursor:pointer;border:none}
+.btn-fill{background:var(--graphite);color:#fff}
+.btn-fill:hover{background:#000}
+.btn-ghost{background:transparent;border:1px solid var(--graphite);color:var(--graphite)}
+.btn-ghost:hover{background:var(--graphite);color:#fff}
+.nav-toggle{display:none;font-size:24px;background:none;border:none;cursor:pointer}
+
+/* section rhythm */
+section{padding:var(--sec-gap) 0}
+.band-ash{background:var(--ash)}
+.eyebrow{font-family:var(--f-body);font-size:13px;font-weight:500;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--brass);margin-bottom:20px;display:block}
+.h-sec{font-size:40px;line-height:1.1;letter-spacing:-0.8px;max-width:16ch;margin-bottom:20px}
+.lead{font-size:18px;color:var(--steel);line-height:1.5;max-width:56ch}
+.u-ember{border-bottom:1px solid var(--ember);text-underline-offset:3px}
+b,strong{font-weight:600}
+
+/* hero */
+.hero{padding-top:70px;padding-bottom:70px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center}
+.hero h1{font-size:66px;line-height:.92;letter-spacing:-1.4px;margin:18px 0 22px}
+.hero h1 .em{color:var(--ember)}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.hero-note{margin-top:24px;font-size:14px;color:var(--slate)}
+/* hero cards cluster */
+.cards{position:relative;min-height:420px}
+.dcard{background:#fff;border-radius:20px;padding:26px;border:1px solid var(--mist)}
+.dcard.c1{position:relative;z-index:2}
+.dcard.c2{position:absolute;right:-10px;bottom:-24px;width:62%;z-index:3;background:var(--graphite);color:#fff;border-color:#333}
+.dcard-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.dcard-h .t{font-family:var(--f-display);font-size:15px}
+.dcard-h .s{font-size:12px;color:var(--slate)}
+.stat-row{display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid var(--mist)}
+.dcard.c2 .stat-row{border-top:1px solid #333}
+.stat-row .k{font-size:14px;color:var(--slate)}
+.dcard.c2 .stat-row .k{color:#9a9a9a}
+.stat-row .v{font-family:var(--f-display);font-size:18px}
+.up{color:#2e9c5a;font-size:12px;margin-left:6px}
+.dn{color:var(--ember);font-size:12px;margin-left:6px}
+.spark{height:64px;margin:6px 0 4px}
+
+/* metric strip */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+  border-top:1px solid var(--mist);border-bottom:1px solid var(--mist);
+  padding:36px 0;margin-top:56px}
+.metric .n{font-family:var(--f-display);font-size:40px;letter-spacing:-.8px;line-height:1}
+.metric .n .u{color:var(--ember)}
+.metric .l{font-size:13px;color:var(--slate);margin-top:8px}
+
+/* live cabinet frame */
+.vframe{margin-top:40px;border:1px solid var(--mist);border-radius:20px;overflow:hidden;background:#0b1220;box-shadow:0 24px 60px -34px rgba(32,32,32,.35)}
+.vframe-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#0e1626;border-bottom:1px solid #1c2740}
+.vf-dots{display:flex;gap:6px}
+.vf-dots i{width:11px;height:11px;border-radius:50%;display:block}
+.vf-dots i:nth-child(1){background:#ff682c}.vf-dots i:nth-child(2){background:#d9b23a}.vf-dots i:nth-child(3){background:#5fbf8a}
+.vf-title{font-family:var(--f-body);font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:#8a97ac}
+.vf-live{margin-left:auto;display:flex;align-items:center;gap:7px;font-family:var(--f-body);font-size:11px;text-transform:uppercase;color:#8a97ac}
+.vf-live i{width:6px;height:6px;border-radius:50%;background:#ff682c}
+.vframe iframe{display:block;width:100%;height:640px;border:0}
+.vframe-cap{margin-top:14px;font-size:13px;color:var(--slate)}
+@media(max-width:640px){.vframe iframe{height:460px}}
+
+/* values */
+.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.vcard{background:#fff;border-radius:6px 0 0 6px;padding:36px 32px}
+.band-ash .vcard{background:#fff}
+.vnum{font-family:var(--f-display);font-size:13px;color:var(--brass);margin-bottom:22px}
+.vcard h3{font-size:24px;margin-bottom:14px;letter-spacing:-.4px}
+.vcard p{font-size:15px;color:var(--steel)}
+.vquote{margin-top:36px;font-family:var(--f-display);font-size:18px;color:var(--slate);text-align:center}
+
+/* product */
+.prod{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.pcard{background:var(--ash);border-radius:6px 0 0;padding:40px 34px;display:flex;flex-direction:column}
+.pcard h3{font-size:22px;line-height:1.15;margin-bottom:16px;letter-spacing:-.4px}
+.pcard p{font-size:15px;color:var(--steel);margin-bottom:24px}
+.pmini{background:#fff;border-radius:12px;padding:18px;margin-top:auto}
+.pmini .row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
+.pmini .row:not(:last-child){border-bottom:1px solid var(--mist)}
+.pmini .row .v{font-family:var(--f-display)}
+
+/* tech */
+.tech{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.tcard{background:#fff;border-radius:6px 0 0;padding:40px 34px;border:1px solid var(--mist)}
+.tk{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--brass);margin-bottom:16px}
+.tcard h3{font-size:26px;margin-bottom:14px;letter-spacing:-.5px}
+.tcard p{font-size:15px;color:var(--steel);margin-bottom:18px}
+.tcard .cert{font-size:13px;color:var(--slate);border-top:1px solid var(--mist);padding-top:14px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:40px}
+.step{background:#fff;border-radius:6px 0 0;padding:28px 22px}
+.step .n{font-family:var(--f-display);font-size:32px;color:var(--ember);letter-spacing:-.6px}
+.step h4{font-size:17px;margin:16px 0 10px;line-height:1.2}
+.step p{font-size:14px;color:var(--steel)}
+.step .gift{margin-top:14px;font-size:13px;color:var(--brass)}
+
+/* findir note */
+.note-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+.note-card{background:var(--ivory);border-radius:6px 0 0;padding:44px 40px}
+.note-card .nh{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid rgba(32,32,32,.15);padding-bottom:16px;margin-bottom:22px}
+.note-card .nh h4{font-size:20px}
+.note-card .nh span{font-size:14px;color:var(--brass)}
+.note-card .sum{font-size:15px;color:var(--steel);margin-bottom:20px}
+.note-item{display:flex;gap:14px;padding:14px 0;border-top:1px solid rgba(32,32,32,.1)}
+.note-item .b{font-family:var(--f-display);color:var(--ember);flex:0 0 auto}
+.note-item p{font-size:14px;color:var(--steel)}
+.note-sign{margin-top:22px;font-size:13px;color:var(--slate);font-family:var(--f-display)}
+
+/* cases */
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.ccard{background:#fff;border-radius:6px 0 0;padding:36px 30px;border:1px solid var(--mist)}
+.ck{font-size:13px;color:var(--brass);margin-bottom:16px;font-weight:500}
+.ccard h3{font-size:21px;margin-bottom:14px;letter-spacing:-.3px}
+.ccard p{font-size:15px;color:var(--steel);margin-bottom:22px}
+.cbadge{font-family:var(--f-display);font-size:15px;background:var(--ash);
+  padding:10px 14px;display:inline-block;border-radius:6px 0 0}
+.cbadge .u{color:var(--ember)}
+
+/* marquee */
+.marq{overflow:hidden;border-top:1px solid var(--mist);border-bottom:1px solid var(--mist);
+  padding:22px 0;margin-top:56px}
+.marq-t{text-align:center;font-size:13px;color:var(--slate);margin-bottom:18px}
+.marq-track{display:flex;gap:44px;white-space:nowrap;animation:scroll 26s linear infinite;
+  font-family:var(--f-display);font-size:18px;color:var(--graphite);width:max-content}
+.marq-track span{opacity:.75}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* pricing steps */
+.pr3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.prc{background:#fff;border-radius:6px 0 0;padding:36px 30px;border:1px solid var(--mist);display:flex;flex-direction:column}
+.prk{font-size:13px;color:var(--brass);margin-bottom:12px;font-weight:500}
+.prc h3{font-size:20px;margin-bottom:16px;line-height:1.2}
+.prc .price{font-family:var(--f-display);font-size:32px;letter-spacing:-.6px;margin-bottom:6px}
+.prc .price .plus{display:block;font-size:14px;color:var(--slate);margin-top:6px;font-family:var(--f-body)}
+.prc ul{list-style:none;margin:22px 0;flex:1}
+.prc li{font-size:14px;color:var(--steel);padding:9px 0;padding-left:22px;position:relative;border-top:1px solid var(--mist)}
+.prc li::before{content:"";position:absolute;left:0;top:16px;width:9px;height:1px;background:var(--ember)}
+.disc{text-align:center;font-size:14px;color:var(--slate);margin-top:28px}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:44px;
+  background:#fff;border-radius:6px 0 0;padding:44px;border:1px solid var(--mist)}
+.calc h3{font-size:26px;margin-bottom:8px;letter-spacing:-.5px}
+.calc .sub{font-size:15px;color:var(--slate);margin-bottom:28px}
+.field{margin-bottom:24px}
+.field label{display:block;font-size:14px;font-weight:500;margin-bottom:10px}
+.field .hint{color:var(--slate);font-weight:400}
+.stepper{display:flex;align-items:center;gap:16px}
+.stepper button{width:40px;height:40px;border:1px solid var(--graphite);background:#fff;
+  font-size:20px;cursor:pointer;font-family:var(--f-display)}
+.stepper button:hover{background:var(--graphite);color:#fff}
+.stepper .cnt{font-family:var(--f-display);font-size:24px;min-width:40px;text-align:center}
+.seg{display:flex;gap:0;border:1px solid var(--mist)}
+.seg button{flex:1;padding:11px;background:#fff;border:none;font-family:var(--f-body);
+  font-size:14px;cursor:pointer;color:var(--steel)}
+.seg button.on{background:var(--graphite);color:#fff}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--mist);cursor:pointer}
+.chk input{margin-top:4px;accent-color:var(--ember);width:16px;height:16px}
+.chk .cl{font-size:14px}
+.chk .cd{font-size:12px;color:var(--slate);display:block;margin-top:2px}
+.result{background:var(--ash);border-radius:6px 0 0;padding:32px;align-self:start}
+.result .rrow{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--mist)}
+.result .rrow .k{font-size:14px;color:var(--slate)}
+.result .rrow .v{font-family:var(--f-display);font-size:28px;letter-spacing:-.5px}
+.result .rrow .v .u{color:var(--ember)}
+.result .segsub{margin:20px 0}
+.result .total{display:flex;justify-content:space-between;align-items:baseline;margin:20px 0;
+  padding-top:16px;border-top:2px solid var(--graphite)}
+.result .total .k{font-size:15px}
+.result .total .v{font-family:var(--f-display);font-size:26px}
+.result .disclaimer{font-size:12px;color:var(--slate);margin-top:14px}
+
+/* subscription tariffs */
+.tar{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.tcol{background:#fff;border-radius:6px 0 0;padding:36px 30px;border:1px solid var(--mist);display:flex;flex-direction:column}
+.tcol.hl{background:var(--graphite);color:#fff;border-color:#333}
+.tcol .tk2{font-size:13px;color:var(--brass);margin-bottom:6px}
+.tcol.hl .tk2{color:var(--ember)}
+.tcol h3{font-size:22px;margin-bottom:18px}
+.tcol .p{font-family:var(--f-display);font-size:34px;letter-spacing:-.6px}
+.tcol .p .per{display:block;font-size:14px;color:var(--slate);font-family:var(--f-body);margin-top:6px}
+.tcol.hl .p .per{color:#9a9a9a}
+.tcol ul{list-style:none;margin:22px 0;flex:1}
+.tcol li{font-size:14px;padding:9px 0;padding-left:22px;position:relative;border-top:1px solid var(--mist);color:var(--steel)}
+.tcol.hl li{border-top:1px solid #333;color:#cfcfcf}
+.tcol li::before{content:"";position:absolute;left:0;top:16px;width:9px;height:1px;background:var(--ember)}
+
+/* CTA */
+.cta-final{text-align:center}
+.cta-final h2{font-size:52px;line-height:1;letter-spacing:-1px;margin-bottom:20px}
+.cta-final .em{color:var(--ember)}
+.cta-final .lead{margin:0 auto 32px}
+.cta-final .hero-cta{justify-content:center}
+
+/* footer */
+footer{background:var(--graphite);color:#cfcfcf;padding:64px 0 40px}
+.fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px}
+.fbrand .brand{color:#fff;margin-bottom:16px}
+.fbrand p{font-size:14px;color:#9a9a9a;max-width:36ch}
+footer h5{font-family:var(--f-body);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#787878;margin-bottom:16px}
+footer .fcol a{display:block;font-size:14px;color:#cfcfcf;padding:5px 0}
+footer .fcol a:hover{color:var(--ember)}
+.fbot{margin-top:48px;padding-top:24px;border-top:1px solid #333;font-size:13px;color:#787878}
+
+/* ===== ANIMATIONS ===== */
+@media(prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(24px);
+    transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}
+  .reveal.d2{transition-delay:.16s}
+  .reveal.d3{transition-delay:.24s}
+  .reveal.d4{transition-delay:.32s}
+}
+.vcard,.pcard,.tcard,.step,.ccard,.prc,.tcol,.dcard{transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+.vcard:hover,.tcard:hover,.ccard:hover,.prc:hover,.step:hover{transform:translateY(-5px)}
+.tcol:hover{transform:translateY(-5px)}
+.dcard.c1:hover{transform:translateY(-4px)}
+.spark polyline{stroke-dasharray:640;stroke-dashoffset:640;transition:stroke-dashoffset 1.6s ease .3s}
+.spark.draw polyline{stroke-dashoffset:0}
+.spark polyline:nth-child(1){transition-delay:.3s}
+.spark polyline:nth-child(2){transition-delay:.55s}
+.btn{position:relative;overflow:hidden}
+.btn-fill::after{content:"";position:absolute;inset:0;background:var(--ember);
+  transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.16,1,.3,1);z-index:-1}
+.btn-fill{z-index:0}
+.btn-fill:hover::after{transform:scaleX(1)}
+.pill a{position:relative}
+.pill a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;
+  background:var(--ember);transform:scaleX(0);transform-origin:center;transition:transform .3s}
+.pill a:hover::after{transform:scaleX(1)}
+
+@media(max-width:960px){
+  .hero-grid,.note-grid,.calc{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:32px 24px}
+  .vals,.prod,.tech,.cases,.pr3,.tar{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:48px}
+  .h-sec{font-size:32px}
+  .cta-final h2{font-size:38px}
+  .pill,.nav .lang{display:none}
+  .cards{min-height:auto}.dcard.c2{position:relative;right:0;bottom:0;width:100%;margin-top:20px}
+}
+@media(max-width:560px){
+  .metrics{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .hero h1{font-size:40px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="#hero" class="brand"><span class="dot"></span>ВИДИМ ДЕНЬГИ</a>
+    <div class="pill">
+      <a href="#values">Ценности</a>
+      <a href="#cabinet">Кабинет</a>
+      <a href="#product">Продукт</a>
+      <a href="#tech">Технология</a>
+      <a href="#how">Под ключ</a>
+      <a href="#pricing">Стоимость</a>
+    </div>
+    <div class="nav-cta">
+      <span class="lang">RU</span>
+      <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Посмотреть демо</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Управленческий учёт · промышленный BI</span>
+      <h1>Видим <span class="em">деньги</span> вашего бизнеса.</h1>
+      <p class="lead">Управленческий учёт и 25+ отчётов на промышленной BI-платформе Yandex DataLens. Внедряем под ключ — снимаем весь цикл работ.</p>
+      <div class="hero-cta">
+        <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Посмотреть демо →</a>
+        <a href="#cabinet" class="btn btn-ghost">Открыть пример дашборда →</a>
+      </div>
+      <p class="hero-note">Настройка баз и порядок в документах — <span class="u-ember">в подарок</span>.</p>
+    </div>
+    <div class="cards">
+      <div class="dcard c1">
+        <div class="dcard-h"><span class="t">P&amp;L · Все направления · Май 2026</span><span class="s">обновлено только что</span></div>
+        <svg class="spark reveal" viewBox="0 0 320 64" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#816729" stroke-width="1.5" points="0,48 40,44 80,46 120,38 160,40 200,30 240,32 280,22 320,18"/>
+          <polyline fill="none" stroke="#ff682c" stroke-width="2" points="0,52 40,50 80,42 120,44 160,34 200,36 240,26 280,28 320,14"/>
+        </svg>
+        <div class="stat-row"><span class="k">Выручка</span><span class="v">42,8 М<span class="up">▲ +12%</span></span></div>
+        <div class="stat-row"><span class="k">Прибыль</span><span class="v">7,9 М<span class="up">▲ +12%</span></span></div>
+        <div class="stat-row"><span class="k">EBITDA</span><span class="v">18,45%<span class="dn">▼ −1,2 п.п.</span></span></div>
+      </div>
+      <div class="dcard c2">
+        <div class="dcard-h"><span class="t">Платёжный календарь</span></div>
+        <div class="stat-row"><span class="k">Прогноз · неделя 3</span><span class="v" style="color:var(--ember)">−1,2 М</span></div>
+        <div class="stat-row"><span class="k">Закрыть до 14-го</span><span class="v">OK</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="metrics">
+      <div class="metric reveal"><div class="n"><span class="count" data-to="25">0</span><span class="u">+</span></div><div class="l">управленческих отчётов</div></div>
+      <div class="metric reveal d1"><div class="n"><span class="count" data-to="30">0</span><span class="u">+</span></div><div class="l">источников по API</div></div>
+      <div class="metric reveal d2"><div class="n"><span class="count" data-to="15">0</span> <span class="u">мин</span></div><div class="l">цикл обновления данных</div></div>
+      <div class="metric reveal d3"><div class="n"><span class="count" data-to="134">0</span><span class="u">+</span></div><div class="l">довольных клиентов</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE CABINET (from factory) -->
+<section id="cabinet">
+  <div class="wrap">
+    <span class="eyebrow">Живой кабинет · CEO / Инвесторы</span>
+    <h2 class="h-sec">Так это выглядит внутри.</h2>
+    <p class="lead">Реальный управленческий кабинет: P&amp;L, БДДС, баланс, капитализация и юнит-экономика — на одном экране. Покликайте прямо здесь.</p>
+    <div class="vframe reveal">
+      <div class="vframe-bar">
+        <span class="vf-dots"><i></i><i></i><i></i></span>
+        <span class="vf-title">ВИДИМ ДЕНЬГИ · Кабинет · CEO / Инвесторы</span>
+        <span class="vf-live"><i></i>Live</span>
+      </div>
+      <iframe src="https://alexxpotemkin2015-prog.github.io/wsm-cabinet/" title="Кабинет ВИДИМ ДЕНЬГИ — CEO / Инвесторы" loading="lazy"></iframe>
+    </div>
+    <p class="vframe-cap">Демо-данные. <a href="https://alexxpotemkin2015-prog.github.io/wsm-cabinet/" target="_blank" rel="noopener" class="u-ember">Открыть кабинет в полном окне →</a></p>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <span class="eyebrow">Результат</span>
+    <h2 class="h-sec">Что меняется в бизнесе</h2>
+    <p class="lead">Три вещи, которые собственник получает с первого месяца работы кабинета.</p>
+    <div class="cases">
+      <div class="ccard">
+        <div class="ck">01 · Скорость</div>
+        <h3>Скорость чистой информации</h3>
+        <p>Чистые цифры — не через три недели после закрытия, а в момент запроса. P&amp;L, БДДС и консолидация обновляются каждые 15 минут — решения принимаются вовремя.</p>
+        <div class="cbadge">3 недели → <span class="u">15 мин</span> до чистого отчёта</div>
+      </div>
+      <div class="ccard">
+        <div class="ck">02 · Точность</div>
+        <h3>Снижение ошибок</h3>
+        <p>Авто-разнесение и сверка вместо ручных таблиц. Одна выручка вместо трёх в сайте, кассе и банке. Человеческий фактор убран — цифрам можно верить.</p>
+        <div class="cbadge"><span class="u">99,4%</span> точность · ручные сверки убраны</div>
+      </div>
+      <div class="ccard">
+        <div class="ck">03 · Эффективность</div>
+        <h3>Оптимизация расходов</h3>
+        <p>Видно, где течёт маржа: убыточные точки, дорогие поставщики, кассовые окна. Решения на данных дают конкретную экономию.</p>
+        <div class="cbadge">убыточные центры видны за <span class="u">2 недели</span></div>
+      </div>
+    </div>
+
+    <div class="marq">
+      <div class="marq-t">Подключаем 30+ источников по API — банки, iiko, 1С, маркетплейсы, CRM</div>
+      <div class="marq-track">
+        <span>iiko · 1С · amoCRM · Битрикс24 · Сбер · Альфа-Банк · T-Bank · Точка · ВТБ · Wildberries · OZON · REST API ·&nbsp;</span>
+        <span>iiko · 1С · amoCRM · Битрикс24 · Сбер · Альфа-Банк · T-Bank · Точка · ВТБ · Wildberries · OZON · REST API ·&nbsp;</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section id="values" class="band-ash">
+  <div class="wrap">
+    <span class="eyebrow">Наши ценности</span>
+    <h2 class="h-sec">Три принципа, на которых держится всё.</h2>
+    <p class="lead">Мы строим не «программу», а отношение к деньгам бизнеса.<br>Вот во что мы верим.</p>
+    <div class="vals">
+      <div class="vcard">
+        <div class="vnum">01 — Ясность</div>
+        <h3>Видеть реальность</h3>
+        <p>Бизнес должен видеть свои деньги как есть. Мы превращаем хаос разрозненных цифр в один понятный экран — чтобы решения принимались на данных, а не на ощущениях.</p>
+      </div>
+      <div class="vcard">
+        <div class="vnum">02 — Честность</div>
+        <h3>Цифры, которым верят</h3>
+        <p>Показываем честную чистую прибыль и реальные риски — без приукрашивания. Если что-то идёт не так, вы узнаёте об этом первым, а не последним.</p>
+      </div>
+      <div class="vcard">
+        <div class="vnum">03 — Поддержка</div>
+        <h3>Рядом каждый месяц</h3>
+        <p>Остаёмся рядом на каждом этапе. Записка финдиректора, ответы на вопросы, новые гипотезы — мы остаёмся вашим финансовым партнёром.</p>
+      </div>
+    </div>
+    <p class="vquote">Время — главное, что мы возвращаем владельцу. <span class="u-ember">Управлять, а не сидеть за отчётами.</span></p>
+  </div>
+</section>
+
+<!-- PRODUCT -->
+<section id="product">
+  <div class="wrap">
+    <span class="eyebrow">Продукт</span>
+    <h2 class="h-sec">Один экран.<br>Все деньги.<br>Каждый день.</h2>
+    <p class="lead">25+ управленческих отчётов в одном кабинете — финансовых, операционных, командных.</p>
+    <div class="prod">
+      <div class="pcard">
+        <h3>Баланс, P&amp;L и БДДС в реальном времени</h3>
+        <p>Выручка, маржа, чистая прибыль по проектам, направлениям и точкам. Обновление каждые 15 минут — вы видите бизнес сейчас, а не «через три месяца».</p>
+        <div class="pmini">
+          <div class="row"><span>Выручка</span><span class="v">42,8 М</span></div>
+          <div class="row"><span>Прибыль</span><span class="v">7,9 М</span></div>
+          <div class="row"><span>EBITDA</span><span class="v">18,45%</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <h3>Кассовый разрыв — за 30 дней вперёд</h3>
+        <p>Платёжный календарь видит разрыв заранее — есть время переставить платежи и среагировать, а не тушить пожар.</p>
+        <div class="pmini">
+          <div class="row"><span>Прогноз · неделя 3</span><span class="v" style="color:var(--ember)">−1,2 М</span></div>
+          <div class="row"><span>Платёжный календарь · 14-е</span><span class="v">Закрыть</span></div>
+          <div class="row"><span>Перенос платежа</span><span class="v">решает</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <h3>Юнит-экономика и когорты</h3>
+        <p>CAC, LTV, payback, retention — под вашу бизнес-модель: HoReCa, e-com, услуги, производство. Понимаете, какие клиенты и точки реально зарабатывают.</p>
+        <div class="pmini">
+          <div class="row"><span>LTV / CAC</span><span class="v">4,2×</span></div>
+          <div class="row"><span>Payback</span><span class="v">3,1 мес</span></div>
+          <div class="row"><span>Retention</span><span class="v">86%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="tech" class="band-ash">
+  <div class="wrap">
+    <span class="eyebrow">Технология</span>
+    <h2 class="h-sec">Передовая инфраструктура.<br>Под капотом<br>каждого экрана.</h2>
+    <p class="lead">Промышленная BI-инфраструктура корпоративного уровня. Сертифицировано, локализовано в РФ, в реестре отечественного ПО.</p>
+    <div class="tech">
+      <div class="tcard">
+        <div class="tk">BI Platform</div>
+        <h3>Yandex DataLens</h3>
+        <p>Промышленная BI-платформа Яндекса. Та, на которой работают X5, Альфа-Банк, Лента, Магнит.</p>
+        <div class="cert">партнёр ВИДИМ ДЕНЬГИ</div>
+      </div>
+      <div class="tcard">
+        <div class="tk">Database</div>
+        <h3>ClickHouse · РФ</h3>
+        <p>Колоночная СУБД. Аналитика по миллиардам строк за секунды. Серверы в Москве — данные не покидают РФ.</p>
+        <div class="cert">ISO/IEC 27001 / 27017 / 27018</div>
+      </div>
+      <div class="tcard">
+        <div class="tk">Compliance</div>
+        <h3>152-ФЗ · ФСТЭК УЗ-1</h3>
+        <p>Сертификаты подписаны Yandex Cloud. Ведите бизнес без рисков, в рамках российского законодательства.</p>
+        <div class="cert">Пакет документов Yandex Cloud</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW / внедрение -->
+<section id="how">
+  <div class="wrap">
+    <span class="eyebrow">Внедрение под ключ</span>
+    <h2 class="h-sec">Снимаем весь цикл — от баз до поддержки.</h2>
+    <p class="lead">Берём ваш бизнес как есть: с действующим учётом — ускоряем, без учёта — ставим с нуля. Приведение документов в порядок — в подарок.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="n">01</div>
+        <h4>Настроим учёт и документы</h4>
+        <p>Поставим управленческий учёт: статьи, ЦФО, методологию, регламент. Приведём документы в порядок.</p>
+        <div class="gift">🎁 документы в подарок</div>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h4>Подключим источники</h4>
+        <p>iiko, банки, 1С, маркетплейсы, CRM. Готовые API-коннекторы под РФ. Всё настраиваем мы.</p>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h4>Соберём кастомные дашборды</h4>
+        <p>Не шаблон. P&amp;L по вашим направлениям, юнит-экономика под вашу воронку, 25+ отчётов.</p>
+      </div>
+      <div class="step">
+        <div class="n">04</div>
+        <h4>Обучим команду</h4>
+        <p>Видео-туториалы по вашим дашбордам, чат поддержки, прямой Telegram с финансистом.</p>
+      </div>
+      <div class="step">
+        <div class="n">05</div>
+        <h4>Поддерживаем систему</h4>
+        <p>Держим рабочую систему в строю: новые отчёты, источники, гипотезы. И записка финдиректора каждый месяц.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINDIR NOTE -->
+<section id="report" class="band-ash">
+  <div class="wrap">
+    <span class="eyebrow">Сопровождение</span>
+    <h2 class="h-sec">Каждый месяц — записка от финдиректора.</h2>
+    <p class="lead" style="margin-bottom:44px">Не чат-бот. Живой финансовый директор разбирает ваши цифры и присылает аналитическую записку с конкретными рекомендациями.</p>
+    <div class="note-grid">
+      <div class="note-card">
+        <div class="nh"><h4>Аналитическая записка</h4><span>Май 2026</span></div>
+        <p class="sum">Итоги месяца: выручка <b>42,8 М</b> (+12,4%), чистая прибыль <b>7,9 М</b> (+18,3%), маржа <b>18,5%</b> (−1,2 п.п.).</p>
+        <div class="note-item"><span class="b">1</span><p>Маржа просела на 1,2 п.п. — драйвер рост себестоимости в доставке. <b>Рекомендую пересмотреть контракт с поставщиком.</b></p></div>
+        <div class="note-item"><span class="b">2</span><p>Точка на Парковой убыточна второй месяц. <b>План вывода в плюс или закрытие до конца квартала.</b></p></div>
+        <div class="note-item"><span class="b">3</span><p>Свободный кеш 6,1 М. <b>Окно для досрочного гашения кредита — экономия ≈ 180 К на процентах.</b></p></div>
+        <div class="note-sign">Финансовый директор ВИДИМ ДЕНЬГИ</div>
+      </div>
+      <div>
+        <h3 style="font-size:32px;letter-spacing:-.6px;line-height:1.1;margin-bottom:18px">Видим цифры — говорим, что с ними делать.</h3>
+        <p class="lead">Дашборд показывает «что происходит». Записка финдиректора объясняет «почему» и «что делать дальше» — на языке решений собственника, а не графиков.</p>
+        <p class="lead" style="margin-top:18px">Входит в сопровождение. Глубина и частота разбора растут с масштабом бизнеса.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- IMPLEMENTATION PRICING -->
+<section id="pricing" class="band-ash">
+  <div class="wrap">
+    <span class="eyebrow">Стоимость внедрения</span>
+    <h2 class="h-sec">Три услуги — собираем контур под ключ.</h2>
+    <p class="lead">Платите только за то, что нужно. Считаем под масштаб вашего бизнеса. Точную смету пришлём после бесплатного аудита.</p>
+    <div class="pr3">
+      <div class="prc">
+        <div class="prk">Шаг 1 · методология</div>
+        <h3>Постановка управленческого учёта</h3>
+        <div class="price">от 120 000 ₽<span class="plus">+ 15 000 ₽ за след. точку</span></div>
+        <ul>
+          <li>План статей ДДС, ОПиУ, управленческий баланс</li>
+          <li>ЦФО и финансовая структура</li>
+          <li>Начальные остатки</li>
+          <li>Единый справочник статей и правила разнесения</li>
+          <li>Раздельный учёт по направлениям и юрлицам</li>
+        </ul>
+        <a href="https://t.me/m/kBDISHODM2Yy" class="btn btn-ghost">Оставить заявку</a>
+      </div>
+      <div class="prc">
+        <div class="prk">Шаг 2 · данные</div>
+        <h3>Настройка учётных программ</h3>
+        <div class="price">от 150 000 ₽<span class="plus">+ 25 000 ₽ за след. точку</span></div>
+        <ul>
+          <li>Настройка 1С, iiko, r_keeper и других баз</li>
+          <li>Автоматизация управленческой отчётности</li>
+          <li>Настройка инвентаризаций</li>
+          <li>Подготовка данных для BI</li>
+        </ul>
+        <a href="https://t.me/m/p8PSuzQoMmE6" class="btn btn-ghost">Оставить заявку</a>
+      </div>
+      <div class="prc">
+        <div class="prk">Шаг 3 · ядро</div>
+        <h3>Разработка BI-дашборда</h3>
+        <div class="price">от 300 000 ₽<span class="plus">+ 40 000 ₽ за след. точку</span></div>
+        <ul>
+          <li>Дашборды ДДС, ОПиУ, баланс на Yandex DataLens</li>
+          <li>Платёжный календарь и юнит-экономика</li>
+          <li>Источники: банки, iiko, 1С, маркетплейсы</li>
+          <li>Обучение команды</li>
+          <li>Приёмка и проверка корректности цифр</li>
+        </ul>
+        <a href="https://t.me/m/rCvld6lZYTky" class="btn btn-ghost">Оставить заявку</a>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:36px">
+      <a href="https://t.me/m/OYvGbasvNDVi" class="btn btn-fill">Получить точный расчёт — бесплатный аудит →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="demo" class="band-ash">
+  <div class="wrap cta-final">
+    <h2>Покажите бизнес — мы <span class="em">покажем деньги</span>.</h2>
+    <p class="lead">30 минут демо: продукт, кабинет и объём внедрения под ключ под вашу финмодель.</p>
+    <div class="hero-cta">
+      <a href="https://t.me/m/ZJppNxLpYjNi" class="btn btn-fill">Посмотреть демо →</a>
+      <a href="#pricing" class="btn btn-ghost">Смотреть стоимость</a>
+    </div>
+    <p class="hero-note" style="text-align:center">Внедрение под ключ. Снимаем весь цикл работ.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap fgrid">
+    <div class="fbrand">
+      <a href="#hero" class="brand"><span class="dot"></span>ВИДИМ ДЕНЬГИ</a>
+      <p>Видим деньги вашего бизнеса. Управленческий учёт и промышленный BI на Yandex DataLens, под ключ.</p>
+    </div>
+    <div class="fcol">
+      <h5>Продукт</h5>
+      <a href="#product">P&amp;L и БДДС</a>
+      <a href="#product">Юнит-экономика</a>
+      <a href="#product">Платёжный календарь</a>
+      <a href="#report">Записка финдиректора</a>
+      <a href="#pricing">Стоимость внедрения</a>
+    </div>
+    <div class="fcol">
+      <h5>Решения</h5>
+      <a href="#cases">HoReCa</a>
+      <a href="#cases">E-commerce</a>
+      <a href="#cases">Услуги</a>
+      <a href="#cases">Производство</a>
+      <a href="#cases">Ритейл</a>
+    </div>
+    <div class="fcol">
+      <h5>Компания</h5>
+      <a href="#values">Ценности</a>
+      <a href="#cases">Кейсы</a>
+      <a href="#how">Внедрение</a>
+      <a href="https://t.me/m/iMPBYVs9Zjli">Telegram</a>
+      <a href="#demo">Контакты</a>
+    </div>
+  </div>
+  <div class="wrap fbot">
+    © 2022 ВИДИМ ДЕНЬГИ · ИП Сокова Е. А. · ИНН 231523564262 · Контактный телефон 8 (938) 411-12-91
+  </div>
+</footer>
+
+<script>
+/* ===== scroll animations ===== */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // auto-tag content blocks as reveal (skip ones already tagged)
+  var sel = '.eyebrow, .h-sec, .lead, .vcard, .pcard, .tcard, .step, .ccard, .prc, .tcol, .note-card, .calc, .vquote, .disc, .cta-final h2, .metric';
+  document.querySelectorAll(sel).forEach(function(el){ el.classList.add('reveal'); });
+  // stagger cards inside each grid
+  ['.vals','.prod','.tech','.steps','.cases','.pr3','.tar'].forEach(function(g){
+    document.querySelectorAll(g).forEach(function(grid){
+      Array.prototype.slice.call(grid.children).forEach(function(c,i){
+        c.classList.add('d'+Math.min(i+1,4));
+      });
+    });
+  });
+
+  function countUp(el){
+    var to = +el.dataset.to, dur = 1200, t0 = null;
+    function tick(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min((ts - t0)/dur, 1);
+      var e = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      el.textContent = Math.round(to * e).toLocaleString('ru-RU');
+      if(p < 1) requestAnimationFrame(tick); else el.textContent = to.toLocaleString('ru-RU');
+    }
+    requestAnimationFrame(tick);
+  }
+
+  if(reduce || !('IntersectionObserver' in window)){
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+    document.querySelectorAll('.count').forEach(countUp);
+    document.querySelectorAll('.spark').forEach(function(s){s.classList.add('draw');});
+    return;
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var el = en.target;
+      el.classList.add('in');
+      if(el.classList.contains('spark')) el.classList.add('draw');
+      el.querySelectorAll && el.querySelectorAll('.count').forEach(countUp);
+      if(el.classList.contains('count')) countUp(el);
+      io.unobserve(el);
+    });
+  }, {threshold:0.18, rootMargin:'0px 0px -8% 0px'});
+
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  document.querySelectorAll('.count').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
