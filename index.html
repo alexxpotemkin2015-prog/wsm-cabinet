@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ВИДИМ ДЕНЬГИ · Финансовый контур «Sample Group» · холдинг 10М+</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#0A1628; --surface:#0F1B2D; --elevated:#1A2942; --line:#1f2f4a;
+    --text:#FFFFFF; --muted:#A8B5C7;
+    --cyan:#4DC3FF; --cyan-dim:#3FA9F5;
+    --coral:#FF8B6B; --mint:#00D4A8; --mint-dim:#00C896;
+    --warn:#FFB85C; --bad:#FF6B6B; --purple:#9b6bff; --pink:#ff6bcb; --yellow:#ffd06b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:14px;line-height:1.5}
+
+  /* HEADER */
+  header{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;gap:24px;position:sticky;top:0;z-index:50}
+  .brand-block{display:flex;align-items:center;gap:12px}
+  .brand-mark{width:38px;height:38px;border-radius:50%;background:var(--bg);border:1.5px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:var(--cyan);letter-spacing:0.5px}
+  .brand-text{font-size:12px;color:var(--muted);line-height:1.25}
+  .brand-text strong{color:var(--text);display:block;font-size:14px;font-weight:700;letter-spacing:0.3px}
+  .filters{display:flex;gap:10px;flex:1}
+  .filter-group{display:flex;align-items:center;gap:6px}
+  .filter-group label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
+  select,.pill{background:var(--elevated);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+  select:focus{outline:1px solid var(--cyan)}
+  .sync-info{font-size:11px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:6px}
+  .sync-dot{width:6px;height:6px;background:var(--mint);border-radius:50%;box-shadow:0 0 8px var(--mint)}
+
+  /* TABS */
+  nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);padding:0 28px;display:flex;gap:2px;position:sticky;top:67px;z-index:49;overflow-x:auto}
+  nav.tabs button{background:transparent;color:var(--muted);border:none;padding:14px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.2px;transition:color 0.12s,border-color 0.12s}
+  nav.tabs button:hover{color:var(--text)}
+  nav.tabs button.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+  nav.tabs button .num{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:10.5px;margin-right:6px;opacity:0.7}
+
+  /* MAIN */
+  main{padding:20px 28px 60px}
+  section.tab-content{display:none}
+  section.tab-content.active{display:block;animation:fade 0.15s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+  /* GRID */
+  .row{display:grid;gap:14px;margin-bottom:14px}
+  .row.cols-2{grid-template-columns:1fr 1fr}
+  .row.cols-3{grid-template-columns:1fr 1fr 1fr}
+  .row.cols-4{grid-template-columns:repeat(4,1fr)}
+  .row.cols-5{grid-template-columns:repeat(5,1fr)}
+  .row.cols-6{grid-template-columns:repeat(6,1fr)}
+  .row.cols-23{grid-template-columns:2fr 3fr}
+  .row.cols-32{grid-template-columns:3fr 2fr}
+  .row.cols-14{grid-template-columns:1fr 4fr}
+  @media (max-width:1100px){.row.cols-3,.row.cols-4,.row.cols-5,.row.cols-6,.row.cols-23,.row.cols-32,.row.cols-14{grid-template-columns:1fr 1fr}}
+  @media (max-width:700px){.row{grid-template-columns:1fr !important}}
+
+  /* KPI CARD */
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;position:relative;min-height:96px}
+  .kpi-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;font-weight:600}
+  .kpi-value{font-size:24px;font-weight:800;margin-top:8px;letter-spacing:-0.4px;font-variant-numeric:tabular-nums}
+  .kpi-value.s{font-size:20px}
+  .kpi-delta{font-size:11.5px;margin-top:5px;display:flex;align-items:center;gap:4px}
+  .kpi-delta.up{color:var(--mint)}
+  .kpi-delta.dn{color:var(--bad)}
+  .kpi-delta.flat{color:var(--muted)}
+  .kpi-icon{position:absolute;right:12px;top:12px;width:26px;height:26px;border-radius:6px;background:rgba(77,195,255,0.1);display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:13px;font-weight:700}
+  .kpi-spark{position:absolute;bottom:8px;right:8px;width:60px;height:24px}
+
+  /* CHART CARD */
+  .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+  .chart-title{font-size:14px;font-weight:700}
+  .chart-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .chart-toggle{display:flex;gap:4px}
+  .chart-toggle button{background:var(--elevated);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:0.3px}
+  .chart-toggle button.on{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+  .chart-wrap{position:relative;height:240px}
+  .chart-wrap.tall{height:320px}
+  .chart-wrap.xtall{height:380px}
+  .chart-wrap.short{height:180px}
+
+  /* TABLE */
+  .data-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  .data-table th{background:var(--elevated);color:var(--muted);padding:9px 10px;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-bottom:1px solid var(--line);position:sticky;top:0}
+  .data-table td{padding:9px 10px;border-bottom:1px solid var(--line)}
+  .data-table tr:hover td{background:rgba(255,255,255,0.02)}
+  .data-table .num{text-align:right}
+  .data-table .pos{color:var(--mint)}
+  .data-table .neg{color:var(--bad)}
+  .data-table .total{background:var(--elevated);font-weight:700}
+  .table-scroll{max-height:360px;overflow-y:auto;border-radius:8px;border:1px solid var(--line)}
+
+  /* IMPL NOTE */
+  .impl-note{margin-top:10px;padding:8px 12px;background:rgba(77,195,255,0.05);border:1px dashed rgba(77,195,255,0.2);border-radius:6px;font-size:11px;color:var(--muted);line-height:1.45}
+  .impl-note strong{color:var(--cyan);font-weight:600}
+
+  /* HEATMAP (week × branch) */
+  .heatmap{display:grid;gap:2px;grid-template-columns:100px repeat(13,1fr);font-size:11px}
+  .heatmap .hm-h{color:var(--muted);padding:4px 6px;font-weight:600}
+  .heatmap .hm-cell{padding:8px 4px;text-align:center;border-radius:3px;color:var(--text);font-weight:600}
+
+  /* HOUR × DAY HEATMAP */
+  .hours-heatmap{display:grid;gap:1px;grid-template-columns:80px repeat(24,1fr);font-size:10px}
+  .hours-heatmap .hh-h{color:var(--muted);padding:3px 4px;font-weight:600;text-align:center}
+  .hours-heatmap .hh-day{color:var(--text);padding:6px 4px;font-weight:600;font-size:11px;display:flex;align-items:center}
+  .hours-heatmap .hh-cell{padding:6px 0;text-align:center;border-radius:2px;color:rgba(255,255,255,0.85);font-weight:600;font-size:10px;cursor:default;transition:transform 0.1s}
+  .hours-heatmap .hh-cell:hover{transform:scale(1.15);z-index:5;position:relative;box-shadow:0 0 10px rgba(77,195,255,0.5)}
+
+  /* CALENDAR HEATMAP (plan vs fact) */
+  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px}
+  .calendar .cal-h{color:var(--muted);padding:4px 2px;text-align:center;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px}
+  .calendar .cal-cell{background:var(--elevated);padding:8px 6px;border-radius:4px;min-height:62px;position:relative;cursor:default}
+  .calendar .cal-cell .cal-d{font-size:10px;color:var(--muted);font-weight:600}
+  .calendar .cal-cell .cal-v{font-size:12px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .calendar .cal-cell .cal-pct{font-size:10px;margin-top:2px;font-weight:600}
+  .calendar .cal-cell.good{border-left:3px solid var(--mint)}
+  .calendar .cal-cell.warn{border-left:3px solid var(--warn)}
+  .calendar .cal-cell.bad{border-left:3px solid var(--bad)}
+  .calendar .cal-cell.empty{background:transparent;min-height:0;padding:0}
+
+  /* TREEMAP (CSS grid) */
+  .treemap{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:55px;gap:3px}
+  .tm-cell{padding:8px 10px;border-radius:4px;display:flex;flex-direction:column;justify-content:space-between;color:var(--text);overflow:hidden;cursor:default;transition:transform 0.1s}
+  .tm-cell:hover{transform:scale(1.02);z-index:3;position:relative}
+  .tm-name{font-size:11.5px;font-weight:700;line-height:1.15}
+  .tm-val{font-size:11px;opacity:0.85;font-variant-numeric:tabular-nums}
+
+  /* GAUGE */
+  .gauge-wrap{position:relative;display:flex;align-items:center;justify-content:center;height:200px}
+  .gauge-text{position:absolute;text-align:center}
+  .gauge-text .gv{font-size:28px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+  .gauge-text .gl{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
+
+  /* ALERTS */
+  .alert{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:6px;margin-bottom:8px;border-left:3px solid var(--warn);background:rgba(255,184,92,0.06);font-size:13px}
+  .alert.bad{border-left-color:var(--bad);background:rgba(255,107,107,0.06)}
+  .alert.good{border-left-color:var(--mint);background:rgba(0,212,168,0.06)}
+  .alert-icon{font-weight:800;color:var(--warn);flex-shrink:0;font-size:14px}
+  .alert.bad .alert-icon{color:var(--bad)}
+  .alert.good .alert-icon{color:var(--mint)}
+
+  /* BADGE */
+  .bdg{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+  .bdg-good{background:rgba(0,212,168,0.15);color:var(--mint)}
+  .bdg-bad{background:rgba(255,107,107,0.15);color:var(--bad)}
+  .bdg-warn{background:rgba(255,184,92,0.15);color:var(--warn)}
+  .bdg-info{background:rgba(77,195,255,0.15);color:var(--cyan)}
+  .bdg-A{background:rgba(0,212,168,0.18);color:var(--mint)}
+  .bdg-B{background:rgba(255,184,92,0.18);color:var(--warn)}
+  .bdg-C{background:rgba(255,107,107,0.18);color:var(--bad)}
+
+  /* SENSITIVITY MATRIX */
+  .matrix{display:grid;grid-template-columns:1fr repeat(5,1fr);gap:2px;font-size:12px}
+  .matrix .mh{background:var(--elevated);padding:8px 10px;font-weight:700;color:var(--muted);font-size:11px;text-align:center}
+  .matrix .mc{padding:10px;text-align:center;font-weight:600;border-radius:3px;font-variant-numeric:tabular-nums}
+
+  /* TIP */
+  .info-tip{color:var(--muted);cursor:help;font-size:11px;margin-left:4px}
+
+  /* PAGE FOOT */
+  .page-foot{margin:40px 0 0;padding:18px 22px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--muted)}
+  .page-foot h4{margin:0 0 8px;color:var(--cyan);font-size:12px;text-transform:uppercase;letter-spacing:0.6px}
+
+  /* EXTERNAL LINK PILL */
+  .ext-link{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--elevated);border:1px solid var(--cyan);border-radius:6px;color:var(--cyan);font-size:12px;text-decoration:none;font-weight:600;cursor:pointer;transition:background 0.12s}
+  .ext-link:hover{background:var(--cyan);color:var(--bg)}
+
+  /* SVG GEOMAP / SANKEY */
+  .svg-canvas{width:100%;height:100%}
+
+  /* MARKET BASKET */
+  .basket-table td{font-size:12.5px}
+  .basket-bar{display:inline-block;height:8px;background:var(--cyan);border-radius:2px;vertical-align:middle;margin-right:6px}
+</style>
+
+<style>
+  /* === PRO ADD-ONS === */
+  /* источники данных в шапке (единый контур) */
+  .sources{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .src{display:flex;align-items:center;gap:5px;background:var(--elevated);border:1px solid var(--line);border-radius:20px;padding:4px 10px 4px 8px;font-size:11px;color:var(--muted);font-weight:600}
+  .src .d{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .src .d.ok{background:var(--mint);box-shadow:0 0 7px var(--mint)}
+  .src .d.warn{background:var(--warn);box-shadow:0 0 7px var(--warn)}
+  .src .d.off{background:#54627a}
+  .src b{color:var(--text);font-weight:700}
+  /* nav role groups */
+  nav.tabs .grp{display:flex;align-items:center;color:#54627a;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:0 10px 0 14px;white-space:nowrap;border-left:1px solid var(--line);margin-left:4px}
+  nav.tabs .grp:first-child{border-left:none;margin-left:0;padding-left:6px}
+  /* section header inside tab */
+  .sec-head{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+  .sec-head .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(77,195,255,0.1);border:1px solid rgba(77,195,255,0.25)}
+  .sec-head h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-0.2px}
+  .sec-head .who{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .sec-head .src-tag{margin-left:auto;font-size:10.5px;color:var(--muted);background:var(--elevated);border:1px solid var(--line);border-radius:6px;padding:5px 10px}
+  .sec-head .src-tag b{color:var(--cyan)}
+  /* mini progress bar */
+  .pbar{height:7px;background:var(--elevated);border-radius:4px;overflow:hidden;margin-top:6px}
+  .pbar > i{display:block;height:100%;border-radius:4px;background:var(--cyan)}
+  .pbar > i.mint{background:var(--mint)} .pbar > i.warn{background:var(--warn)} .pbar > i.bad{background:var(--bad)}
+  /* funnel */
+  .funnel{display:flex;flex-direction:column;gap:6px}
+  .fn-row{display:flex;align-items:center;gap:12px}
+  .fn-bar{height:38px;border-radius:6px;display:flex;align-items:center;padding:0 14px;color:#06121f;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;min-width:90px}
+  .fn-meta{font-size:12px;color:var(--muted)} .fn-meta b{color:var(--text);font-weight:700}
+  /* scenario cards (капитализация) */
+  .scen{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .scen .sc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center}
+  .scen .sc.base{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan) inset}
+  .scen .sc .lab{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;color:var(--muted)}
+  .scen .sc .val{font-size:26px;font-weight:800;margin:8px 0 2px;font-variant-numeric:tabular-nums}
+  .scen .sc .mlt{font-size:11.5px;color:var(--muted)}
+  /* RFM grid */
+  .rfm{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+  .rfm .rc{padding:10px 8px;border-radius:5px;text-align:center;font-size:11px;color:#06121f;font-weight:700;min-height:58px;display:flex;flex-direction:column;justify-content:center;cursor:default}
+  .rfm .rc .n{font-size:15px;font-weight:800}
+  /* stat list */
+  .stat-list{display:flex;flex-direction:column;gap:0}
+  .stat-list .sl{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .stat-list .sl:last-child{border-bottom:none}
+  .stat-list .sl .lbl{color:var(--muted)} .stat-list .sl .v{font-weight:700;font-variant-numeric:tabular-nums}
+  /* big number block */
+  .bignum{display:flex;flex-direction:column;gap:2px}
+  .bignum .bn-v{font-size:32px;font-weight:800;letter-spacing:-0.6px;font-variant-numeric:tabular-nums}
+  .bignum .bn-l{font-size:12px;color:var(--muted)}
+  /* === ОПИУ table (ФМ %-план/факт, План/Факт ₽, Статус, Динамика) === */
+  .opiu{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .opiu th{background:var(--elevated);color:var(--muted);padding:8px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--line);text-align:right;position:sticky;top:0;z-index:2}
+  .opiu th.l{text-align:left}
+  .opiu td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .opiu td.l{text-align:left;color:var(--text)}
+  .opiu tr.grp td{background:rgba(255,255,255,0.03);font-weight:700}
+  .opiu tr.sub td.l{padding-left:28px;color:var(--muted);font-weight:400}
+  .opiu tr.sub td{color:var(--muted)}
+  .opiu tr.tot td{background:rgba(77,195,255,0.08);font-weight:800;border-top:1px solid var(--cyan);border-bottom:1px solid var(--cyan)}
+  .opiu tr.profit td{background:rgba(0,212,168,0.08);font-weight:800;border-top:1px solid var(--mint)}
+  .opiu tr.section td{background:#0b1422;color:#6b7b94;font-size:9.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:7px 10px}
+  .opiu .fm{color:#6b7b94;font-size:11.5px}
+  .opiu .fmf{font-size:11.5px}
+  .opiu td.st{font-weight:800;text-align:center;border-radius:4px}
+  .opiu td.st.ok{background:rgba(0,212,168,0.28);color:#5ff0cf;box-shadow:inset 0 0 0 1px rgba(0,212,168,0.55)}
+  .opiu td.st.bad{background:rgba(255,107,107,0.28);color:#ff9b9b;box-shadow:inset 0 0 0 1px rgba(255,107,107,0.55)}
+  .opiu td.st.warn{background:rgba(255,184,92,0.26);color:#ffce8f;box-shadow:inset 0 0 0 1px rgba(255,184,92,0.5)}
+  .opiu .dyn{font-size:11.5px} .opiu .dyn.up{color:var(--mint)} .opiu .dyn.dn{color:var(--bad)} .opiu .dyn.flat{color:#6b7b94}
+  .opiu .plan{color:var(--muted)} .opiu .fact{color:var(--text);font-weight:600}
+  .opiu-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:10px}
+  .opiu-legend b{color:var(--cyan)}
+  .mini-toggle{display:flex;gap:4px;align-items:center}
+  .mini-toggle label{font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- ════════════ HEADER · ЕДИНЫЙ ФИНАНСОВЫЙ КОНТУР ════════════ -->
+<header>
+  <div class="brand-block">
+    <div class="brand-mark">WSM</div>
+    <div class="brand-text"><strong>SAMPLE GROUP</strong>Холдинг · производство · розница · услуги</div>
+  </div>
+  <div class="filters">
+    <div class="filter-group">
+      <label>Период</label>
+      <select id="periodFilter"><option>За 12 мес</option><option>YTD 2026</option><option>Q1 2026</option><option>Апрель 2026</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Бизнес-юнит</label>
+      <select id="unitFilter"><option value="all">Весь холдинг</option><option>Производство (цех)</option><option>Розница</option><option>Услуги · доставка</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Сравнить</label>
+      <select><option>Прошлый период</option><option>Прошлый год</option><option>План</option></select>
+    </div>
+  </div>
+  <div class="sync-info"><span class="sync-dot"></span> Обновлено 02.06.2026 · 08:40 МСК</div>
+</header>
+
+<!-- лента источников: «собираем со всех площадок» -->
+<div style="background:var(--surface);border-bottom:1px solid var(--line);padding:9px 28px;display:flex;align-items:center;gap:14px">
+  <span style="font-size:10.5px;color:#54627a;font-weight:800;letter-spacing:1px;text-transform:uppercase">Источники</span>
+  <div class="sources">
+    <span class="src"><span class="d ok"></span><b>1С:Бухгалтерия</b> · учёт</span>
+    <span class="src"><span class="d ok"></span><b>Банк</b> · Тинькофф+Альфа</span>
+    <span class="src"><span class="d ok"></span><b>CRM</b> · сделки</span>
+    <span class="src"><span class="d ok"></span><b>Касса</b> · розница/МойСклад</span>
+    <span class="src"><span class="d warn"></span><b>Маркетинг</b> · Я.Директ · задержка 2ч</span>
+    <span class="src"><span class="d ok"></span><b>Лояльность</b> · карты</span>
+    <span class="src"><span class="d ok"></span><b>Производство</b> · MES</span>
+  </div>
+</div>
+
+<!-- ════════════ TABS · СГРУППИРОВАНЫ ПО РОЛЯМ ════════════ -->
+<nav class="tabs" id="tabs">
+  <span class="grp">Топ</span>
+  <button class="active" data-tab="overview"><span class="num">01</span>Обзор · CEO/Инвесторы</button>
+  <span class="grp">Финдир</span>
+  <button data-tab="pnl"><span class="num">02</span>P&amp;L · БДР</button>
+  <button data-tab="cashflow"><span class="num">03</span>БДДС · Cash</button>
+  <button data-tab="balance"><span class="num">04</span>Баланс · Капитал</button>
+  <button data-tab="capital"><span class="num">05</span>Капитализация</button>
+  <button data-tab="unit"><span class="num">06</span>Юнит-экономика</button>
+  <span class="grp">Операции</span>
+  <button data-tab="production"><span class="num">07</span>Производство</button>
+  <button data-tab="manager"><span class="num">08</span>Управляющий · Точки</button>
+  <span class="grp">Рост</span>
+  <button data-tab="marketing"><span class="num">09</span>Маркетинг</button>
+  <button data-tab="loyalty"><span class="num">10</span>Лояльность</button>
+  <span class="grp">Учёт</span>
+  <button data-tab="accounting"><span class="num">11</span>Бухгалтерия</button>
+</nav>
+
+<main>
+<!-- ═══════════ 01 · ОБЗОР CEO / ИНВЕСТОРЫ ═══════════ -->
+<section class="tab-content active" id="tab-overview">
+  <div class="sec-head">
+    <div class="ic">🛰️</div>
+    <div><h2>Единый финансовый контур · сводка собственника</h2><div class="who">Для CEO и инвесторов · один экран = всё здоровье бизнеса</div></div>
+    <div class="src-tag">Собрано из <b>7 источников</b> · 1С · банк · CRM · касса · маркетинг · лояльность · MES</div>
+  </div>
+
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-icon">₽</div><div class="kpi-label">Выручка · апр</div><div class="kpi-value">112,6 М</div><div class="kpi-delta up">▲ +7,9% к марту</div></div>
+    <div class="kpi"><div class="kpi-icon">%</div><div class="kpi-label">EBITDA-маржа</div><div class="kpi-value">16,4%</div><div class="kpi-delta up">▲ +0,8 п.п.</div></div>
+    <div class="kpi"><div class="kpi-icon">₽</div><div class="kpi-label">Чистая прибыль</div><div class="kpi-value">13,1 М</div><div class="kpi-delta up">▲ +14% YoY</div></div>
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Cash · все счета</div><div class="kpi-value">28,4 М</div><div class="kpi-delta flat">≈ 21 день OpEx</div></div>
+    <div class="kpi"><div class="kpi-icon">↗</div><div class="kpi-label">Рост выручки YoY</div><div class="kpi-value">+18,2%</div><div class="kpi-delta up">▲ опережает рынок</div></div>
+    <div class="kpi"><div class="kpi-icon">⚖</div><div class="kpi-label">Долг / EBITDA</div><div class="kpi-value">1,3×</div><div class="kpi-delta up">▲ безопасно (&lt;2,5)</div></div>
+  </div>
+
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">Капитализация</div><div class="kpi-value s">945 М</div><div class="kpi-delta up">▲ +11,2% YTD</div></div>
+    <div class="kpi"><div class="kpi-label">EBITDA TTM</div><div class="kpi-value s">158 М</div><div class="kpi-delta up">▲ +0,9 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Активы · баланс</div><div class="kpi-value s">421 М</div><div class="kpi-delta up">▲ +6,1%</div></div>
+    <div class="kpi"><div class="kpi-label">ROE / ROA</div><div class="kpi-value s">34% / 19%</div><div class="kpi-delta up">▲ норма</div></div>
+    <div class="kpi"><div class="kpi-label">Рабочий капитал</div><div class="kpi-value s">41,2 М</div><div class="kpi-delta flat">CCC 14 дн</div></div>
+    <div class="kpi"><div class="kpi-label">LTV / CAC</div><div class="kpi-value s">4,8×</div><div class="kpi-delta up">▲ здоровая ЮЭ</div></div>
+  </div>
+
+  <div class="row cols-32">
+    <div class="chart-card">
+      <div class="chart-head">
+        <div><div class="chart-title">Выручка и EBITDA · 12 месяцев</div><div class="chart-sub">Весь холдинг · ₽ млн · источник 1С + банк</div></div>
+        <div class="chart-toggle"><button class="on">Выручка+EBITDA</button><button>Маржа %</button></div>
+      </div>
+      <div class="chart-wrap tall"><canvas id="ch-revenue-trend"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Что требует внимания собственника</div><div class="chart-sub">Автоалёрты из правил витрины</div></div></div>
+      <div class="alert bad"><div class="alert-icon">!</div><div><strong>Услуги · доставка</strong> — маржа упала до <span class="bdg bdg-bad">4,2%</span> 3 нед подряд. Триггер — рост себестоимости логистики. Решение нужно.</div></div>
+      <div class="alert"><div class="alert-icon">⚠</div><div><strong>Material cost цеха</strong> вырос 31,2% → 33,4% за апрель из-за сырья +9%. Пересмотреть цены или поставщика.</div></div>
+      <div class="alert"><div class="alert-icon">⚠</div><div><strong>Кассовый разрыв риск</strong> 6–9 мая (–3,8 М): крупные авансы поставщикам сошлись с налогами. Сдвиг на 12 мая.</div></div>
+      <div class="alert good"><div class="alert-icon">✓</div><div><strong>Розница «Север»</strong> — рекорд 21,4 М, маржа <span class="bdg bdg-good">23,1%</span>. Кандидат на тираж формата.</div></div>
+    </div>
+  </div>
+
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Вклад бизнес-юнитов в выручку</div><div class="chart-sub">Апрель · ₽ млн · 3 направления</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-units-bar"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">P&amp;L водопад · апрель</div><div class="chart-sub">От выручки холдинга до чистой прибыли</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-waterfall"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">EBITDA-маржа по юнитам</div><div class="chart-sub">Где зарабатываем, где проедаем</div></div></div>
+      <div class="chart-wrap short"><canvas id="ch-unit-margin"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Доля выручки по юнитам</div><div class="chart-sub">Диверсификация холдинга</div></div></div>
+      <div class="chart-wrap short"><canvas id="ch-units-donut"></canvas></div>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ 02 · P&L / БДР · ФИНДИР ═══════════ -->
+<section class="tab-content" id="tab-pnl">
+  <div class="sec-head">
+    <div class="ic">📊</div>
+    <div><h2>P&amp;L · Бюджет доходов и расходов</h2><div class="who">Финансовый директор · структура прибыли и план-факт</div></div>
+    <div class="src-tag">Источник: <b>1С</b> + банк + касса · сверено</div>
+  </div>
+  <div class="row cols-4">
+    <div class="kpi"><div class="kpi-label">Выручка YTD</div><div class="kpi-value">428,6 М</div><div class="kpi-delta up">▲ +16,1% YoY</div></div>
+    <div class="kpi"><div class="kpi-label">EBITDA YTD</div><div class="kpi-value">68,9 М</div><div class="kpi-delta up">▲ +1,2 п.п. маржа</div></div>
+    <div class="kpi"><div class="kpi-label">Выполнение плана</div><div class="kpi-value">104,2%</div><div class="kpi-delta up">▲ опережение</div></div>
+    <div class="kpi"><div class="kpi-label">Прогноз на год</div><div class="kpi-value">1 392 М</div><div class="kpi-delta flat">≈ план 1 340 М</div></div>
+  </div>
+  <div class="row cols-32">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Структура P&amp;L по месяцам</div><div class="chart-sub">Stacked · % от выручки · COGS / ФОТ / аренда / маркетинг / логистика / прочее / EBITDA</div></div></div>
+      <div class="chart-wrap tall"><canvas id="ch-pnl-stack"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Структура расходов</div><div class="chart-sub">Среднее за 12 мес</div></div></div>
+      <div class="chart-wrap tall"><canvas id="ch-pnl-donut"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head">
+      <div><div class="chart-title">ОПИУ · Отчёт о прибылях и убытках · Апрель 2026</div><div class="chart-sub">ФМ-норматив план/факт · План и Факт ₽ по каждой статье · Статус (факт/план) · Динамика к марту</div></div>
+      <div class="chart-toggle"><button class="on">Апрель</button><button>Март</button><button>Q1</button></div>
+    </div>
+    <div class="table-scroll" style="max-height:560px">
+      <table class="opiu" id="pnl-opiu">
+        <thead><tr>
+          <th class="l">Статья</th>
+          <th>ФМ&nbsp;%&nbsp;план</th><th>ФМ&nbsp;%&nbsp;факт</th>
+          <th>План&nbsp;₽</th><th>Факт&nbsp;₽</th>
+          <th>Статус</th><th>Динамика</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="opiu-legend">
+      <span><b>ФМ&nbsp;%</b> — норматив доли статьи в выручке (финмодель) vs факт</span>
+      <span><b>Статус</b> — факт / план (зелёный ≥100% доход, ≤100% расход)</span>
+      <span><b>Динамика</b> — изменение факта к прошлому месяцу</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 03 · БДДС / CASH FLOW · ФИНДИР ═══════════ -->
+<section class="tab-content" id="tab-cashflow">
+  <div class="sec-head">
+    <div class="ic">💧</div>
+    <div><h2>БДДС · Движение денег и прогноз кассы</h2><div class="who">Финансовый директор · ликвидность и кассовые разрывы</div></div>
+    <div class="src-tag">Источник: <b>банк</b> (Тинькофф+Альфа) + касса · real-time</div>
+  </div>
+  <div class="row cols-4">
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Cash сейчас</div><div class="kpi-value">28,4 М</div><div class="kpi-delta up">▲ +4,1 М за мес</div></div>
+    <div class="kpi"><div class="kpi-icon">↓</div><div class="kpi-label">Приток · апр</div><div class="kpi-value">118,2 М</div><div class="kpi-delta flat">≈ план</div></div>
+    <div class="kpi"><div class="kpi-icon">↑</div><div class="kpi-label">Отток · апр</div><div class="kpi-value">114,1 М</div><div class="kpi-delta up">▼ под контролем</div></div>
+    <div class="kpi"><div class="kpi-icon">⚠</div><div class="kpi-label">Мин. остаток (60 дн)</div><div class="kpi-value">−3,8 М</div><div class="kpi-delta dn">▼ разрыв 6–9 мая</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Приток / отток / FCF</div><div class="chart-sub">12 мес · ₽ млн · combo</div></div></div>
+      <div class="chart-wrap tall"><canvas id="ch-cash-combo"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Остатки на счетах</div><div class="chart-sub">Опер. счёт / эквайринг / накопительный · stacked</div></div></div>
+      <div class="chart-wrap tall"><canvas id="ch-cash-accounts"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Прогноз кассы · 60 дней</div><div class="chart-sub">3 сценария · подсветка красной зоны разрыва · ₽ млн</div></div></div>
+    <div class="chart-wrap tall"><canvas id="ch-cash-forecast"></canvas></div>
+    <div class="impl-note"><strong>Логика:</strong> прогноз = текущий остаток + ожидаемые поступления (CRM-сделки + дебиторка) − плановые платежи (БДДС + налоги). Сценарии best/likely/worst по вероятности инкассо.</div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head">
+      <div><div class="chart-title">БДДС · Движение денежных средств по статьям · Апрель 2026</div><div class="chart-sub">ФМ-норматив план/факт · План и Факт ₽ притоков и оттоков · Динамика к марту</div></div>
+      <div class="chart-toggle"><button class="on">Апрель</button><button>Март</button></div>
+    </div>
+    <div class="table-scroll" style="max-height:520px">
+      <table class="opiu" id="dds-opiu">
+        <thead><tr>
+          <th class="l">Статья ДДС</th>
+          <th>ФМ&nbsp;%&nbsp;план</th><th>ФМ&nbsp;%&nbsp;факт</th>
+          <th>План&nbsp;₽</th><th>Факт&nbsp;₽</th>
+          <th>Статус</th><th>Динамика</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="opiu-legend">
+      <span><b>Приток</b> — деньги пришли на счета (выручка, авансы, займы)</span>
+      <span><b>Отток</b> — деньги ушли (закупки, ФОТ, налоги, аренда)</span>
+      <span><b>Чистый поток</b> = приток − отток · влияет на остаток кассы</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 04 · БАЛАНС / КАПИТАЛ · ФИНДИР ═══════════ -->
+<section class="tab-content" id="tab-balance">
+  <div class="sec-head">
+    <div class="ic">⚖️</div>
+    <div><h2>Баланс и рабочий капитал</h2><div class="who">Финансовый директор · структура активов, долговая нагрузка, оборачиваемость</div></div>
+    <div class="src-tag">Источник: <b>1С</b> + банк · ежемесячно</div>
+  </div>
+  <div class="row cols-5">
+    <div class="kpi"><div class="kpi-label">Активы</div><div class="kpi-value s">421 М</div><div class="kpi-delta up">▲ +6,1%</div></div>
+    <div class="kpi"><div class="kpi-label">Обязательства</div><div class="kpi-value s">152 М</div><div class="kpi-delta flat">из них долг 89 М</div></div>
+    <div class="kpi"><div class="kpi-label">Собственный капитал</div><div class="kpi-value s">269 М</div><div class="kpi-delta up">▲ +8,4%</div></div>
+    <div class="kpi"><div class="kpi-label">Долг / Капитал (D/E)</div><div class="kpi-value s">0,33</div><div class="kpi-delta up">▲ консервативно</div></div>
+    <div class="kpi"><div class="kpi-label">Cash Conversion Cycle</div><div class="kpi-value s">14 дн</div><div class="kpi-delta up">▼ −2 дня</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Структура активов</div><div class="chart-sub">Оборудование / ремонт / запасы / cash / дебиторка / эквайринг</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-assets-donut"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Структура пассивов</div><div class="chart-sub">Капитал / нераспр. прибыль / кредиты / кредиторка</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-liab-donut"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Рабочий капитал · оборачиваемость (DIO / DSO / DPO)</div><div class="chart-sub">Запасы / дебиторка / кредиторка в днях · чем ниже CCC — тем меньше денег заморожено</div></div></div>
+    <div class="chart-wrap"><canvas id="ch-wc"></canvas></div>
+  </div>
+</section>
+<!-- ═══════════ 05 · КАПИТАЛИЗАЦИЯ · ИНВЕСТОРЫ ═══════════ -->
+<section class="tab-content" id="tab-capital">
+  <div class="sec-head">
+    <div class="ic">💎</div>
+    <div><h2>Капитализация · сколько стоит бизнес</h2><div class="who">Для собственника и инвесторов · оценка по EBITDA-мультипликатору</div></div>
+    <div class="src-tag">База: <b>EBITDA TTM</b> из P&amp;L · мультипликатор по отрасли</div>
+  </div>
+  <div class="row cols-4">
+    <div class="kpi"><div class="kpi-icon">💎</div><div class="kpi-label">Оценка (базовая)</div><div class="kpi-value">945 М</div><div class="kpi-delta up">▲ +11,2% YTD</div></div>
+    <div class="kpi"><div class="kpi-icon">₽</div><div class="kpi-label">EBITDA TTM</div><div class="kpi-value">158 М</div><div class="kpi-delta up">▲ +18% YoY</div></div>
+    <div class="kpi"><div class="kpi-icon">×</div><div class="kpi-label">Мультипликатор</div><div class="kpi-value">6,0×</div><div class="kpi-delta flat">медиана отрасли 5–7×</div></div>
+    <div class="kpi"><div class="kpi-icon">↑</div><div class="kpi-label">Премия к балансу</div><div class="kpi-value">3,5×</div><div class="kpi-delta up">к капиталу 269 М</div></div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:14px">
+    <div class="chart-head"><div><div class="chart-title">Сценарии оценки</div><div class="chart-sub">EBITDA TTM 158 М × мультипликатор · ± корректировки на риск и рост</div></div></div>
+    <div class="scen">
+      <div class="sc"><div class="lab">Консервативный</div><div class="val" style="color:var(--warn)">760 М</div><div class="mlt">4,8× · дисконт за концентрацию клиентов и зависимость от собственника</div></div>
+      <div class="sc base"><div class="lab">Базовый · текущий</div><div class="val" style="color:var(--cyan)">945 М</div><div class="mlt">6,0× · отраслевая медиана при текущих темпах роста</div></div>
+      <div class="sc"><div class="lab">Оптимистичный</div><div class="val" style="color:var(--mint)">1 185 М</div><div class="mlt">7,5× · премия за диверсификацию + растущая доля повторных продаж</div></div>
+    </div>
+  </div>
+
+  <div class="row cols-32">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Динамика капитализации · 12 мес</div><div class="chart-sub">Рост стоимости вслед за EBITDA · ₽ млн</div></div></div>
+      <div class="chart-wrap tall"><canvas id="ch-cap-trend"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Из чего складывается оценка</div><div class="chart-sub">Мост стоимости</div></div></div>
+      <div class="chart-wrap tall"><canvas id="ch-cap-bridge"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Чувствительность оценки</div><div class="chart-sub">Рост EBITDA (строки) × мультипликатор (колонки) · ₽ млн</div></div></div>
+    <div class="matrix" id="cap-matrix"></div>
+    <div class="impl-note"><strong>Зачем:</strong> показывает инвестору диапазон стоимости при разных допущениях. Каждый +1× мультипликатора = +158 М к оценке. Каждые +10% EBITDA при 6,0× = +95 М.</div>
+  </div>
+</section>
+
+<!-- ═══════════ 06 · ЮНИТ-ЭКОНОМИКА ═══════════ -->
+<section class="tab-content" id="tab-unit">
+  <div class="sec-head">
+    <div class="ic">🧮</div>
+    <div><h2>Юнит-экономика · сколько приносит каждая продажа</h2><div class="who">Продуктовый/финансовый разрез · CAC, LTV, маржа вклада по направлениям</div></div>
+    <div class="src-tag">Источник: <b>CRM</b> + касса + 1С (себестоимость)</div>
+  </div>
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">Средний чек (AOV)</div><div class="kpi-value s">3 280 ₽</div><div class="kpi-delta up">▲ +2,4%</div></div>
+    <div class="kpi"><div class="kpi-label">Маржа вклада</div><div class="kpi-value s">41,8%</div><div class="kpi-delta up">▲ +0,6 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">CAC</div><div class="kpi-value s">1 940 ₽</div><div class="kpi-delta dn">▲ +5% ⚠</div></div>
+    <div class="kpi"><div class="kpi-label">LTV</div><div class="kpi-value s">9 280 ₽</div><div class="kpi-delta up">▲ +8%</div></div>
+    <div class="kpi"><div class="kpi-label">LTV / CAC</div><div class="kpi-value s">4,8×</div><div class="kpi-delta up">▲ норма &gt;3</div></div>
+    <div class="kpi"><div class="kpi-label">Окупаемость (payback)</div><div class="kpi-value s">2,1 мес</div><div class="kpi-delta up">▲ быстро</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Маржа вклада по направлениям</div><div class="chart-sub">Цена − переменные затраты · % и ₽</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-cm"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">LTV / CAC по каналам привлечения</div><div class="chart-sub">Где клиент окупается лучше всего</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-ltvcac"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Юнит-экономика по продуктам · ₽ за единицу</div><div class="chart-sub">Цена → переменные → маржа вклада → доля в прибыли</div></div></div>
+    <div class="table-scroll">
+      <table class="data-table" id="unit-table">
+        <thead><tr><th>Продукт / услуга</th><th class="num">Цена</th><th class="num">Себест.</th><th class="num">Логистика</th><th class="num">Маржа вклада ₽</th><th class="num">Маржа %</th><th class="num">Продаж/мес</th><th class="num">Вклад в прибыль</th><th>Класс</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ 07 · ПРОИЗВОДСТВО (зав. производства) ═══════════ -->
+<section class="tab-content" id="tab-production">
+  <div class="sec-head">
+    <div class="ic">🏭</div>
+    <div><h2>Производство · цех</h2><div class="who">Зав. производства · выпуск, себестоимость, потери, загрузка мощностей</div></div>
+    <div class="src-tag">Источник: <b>MES</b> + 1С (склад/калькуляции)</div>
+  </div>
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">Выпуск · апр</div><div class="kpi-value s">142 т</div><div class="kpi-delta up">▲ +5,4%</div></div>
+    <div class="kpi"><div class="kpi-label">Material cost</div><div class="kpi-value s">33,4%</div><div class="kpi-delta dn">▲ +2,2 п.п. ⚠</div></div>
+    <div class="kpi"><div class="kpi-label">Загрузка мощностей</div><div class="kpi-value s">84%</div><div class="kpi-delta up">▲ +6 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Брак / потери</div><div class="kpi-value s">2,8%</div><div class="kpi-delta dn">▲ +0,5 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Себест. ед.</div><div class="kpi-value s">214 ₽/кг</div><div class="kpi-delta dn">▲ +4,1%</div></div>
+    <div class="kpi"><div class="kpi-label">Остатки сырья</div><div class="kpi-value s">9,2 дн</div><div class="kpi-delta flat">норма 7–10</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Выпуск vs план · 12 мес</div><div class="chart-sub">Тонн · загрузка цеха</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-prod-output"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Структура себестоимости</div><div class="chart-sub">Сырьё / упаковка / энергия / ФОТ цеха / амортизация</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-prod-cost"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Material cost и брак · тренд</div><div class="chart-sub">% от выпуска · рост сырья — главный риск маржи</div></div></div>
+    <div class="chart-wrap short"><canvas id="ch-prod-fc"></canvas></div>
+  </div>
+</section>
+
+<!-- ═══════════ 08 · УПРАВЛЯЮЩИЙ · ТОЧКИ ═══════════ -->
+<section class="tab-content" id="tab-manager">
+  <div class="sec-head">
+    <div class="ic">🧭</div>
+    <div><h2>Операционка · розничные точки</h2><div class="who">Управляющий · выручка по точкам, чек, конверсия, персонал, час/день</div></div>
+    <div class="src-tag">Источник: <b>касса</b> (МойСклад) + CRM · ежедневно</div>
+  </div>
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">Выручка точек · апр</div><div class="kpi-value s">64,8 М</div><div class="kpi-delta up">▲ +6,1%</div></div>
+    <div class="kpi"><div class="kpi-label">Средний чек</div><div class="kpi-value s">3 280 ₽</div><div class="kpi-delta up">▲ +2,4%</div></div>
+    <div class="kpi"><div class="kpi-label">Чеков · апр</div><div class="kpi-value s">19,8 K</div><div class="kpi-delta up">▲ +3,6%</div></div>
+    <div class="kpi"><div class="kpi-label">Конверсия</div><div class="kpi-value s">28,4%</div><div class="kpi-delta up">▲ +1,1 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">ФОТ / выручка</div><div class="kpi-value s">22,1%</div><div class="kpi-delta dn">▲ +0,6 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Дисконты</div><div class="kpi-value s">4,2%</div><div class="kpi-delta flat">в норме</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Выручка по точкам</div><div class="chart-sub">Апрель · ₽ млн · 4 точки</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-mgr-branches"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Выручка по дням недели</div><div class="chart-sub">Где пик, где провал</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-mgr-weekday"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Тепловая карта · час × день недели</div><div class="chart-sub">Когда пики продаж — под графики персонала</div></div></div>
+    <div id="mgr-heatmap" class="hours-heatmap"></div>
+  </div>
+</section>
+
+<!-- ═══════════ 09 · МАРКЕТИНГ ═══════════ -->
+<section class="tab-content" id="tab-marketing">
+  <div class="sec-head">
+    <div class="ic">📣</div>
+    <div><h2>Маркетинг · каналы и окупаемость</h2><div class="who">Маркетолог · ROMI, ДРР, CAC, воронка трафик→сделки</div></div>
+    <div class="src-tag">Источник: <b>Я.Директ</b> + CRM + касса · задержка 2ч</div>
+  </div>
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">Маркетинг-бюджет</div><div class="kpi-value s">5,8 М</div><div class="kpi-delta dn">▲ +9%</div></div>
+    <div class="kpi"><div class="kpi-label">ДРР</div><div class="kpi-value s">5,1%</div><div class="kpi-delta dn">▲ +0,4 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">ROMI</div><div class="kpi-value s">412%</div><div class="kpi-delta up">▲ здоровый</div></div>
+    <div class="kpi"><div class="kpi-label">CAC</div><div class="kpi-value s">1 940 ₽</div><div class="kpi-delta dn">▲ +5%</div></div>
+    <div class="kpi"><div class="kpi-label">Лидов · апр</div><div class="kpi-value s">3 010</div><div class="kpi-delta up">▲ +7%</div></div>
+    <div class="kpi"><div class="kpi-label">Конв. лид→сделка</div><div class="kpi-value s">24,8%</div><div class="kpi-delta up">▲ +1,2 п.п.</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Расход и выручка по каналам</div><div class="chart-sub">ROMI по источникам · ₽</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-mkt-channels"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Воронка привлечения</div><div class="chart-sub">Показы → клики → лиды → сделки</div></div></div>
+      <div class="funnel" id="mkt-funnel"></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Бюджет vs выручка от маркетинга · 12 мес</div><div class="chart-sub">Окупаемость во времени · ₽ млн</div></div></div>
+    <div class="chart-wrap short"><canvas id="ch-mkt-trend"></canvas></div>
+  </div>
+</section>
+
+<!-- ═══════════ 10 · ЛОЯЛЬНОСТЬ ═══════════ -->
+<section class="tab-content" id="tab-loyalty">
+  <div class="sec-head">
+    <div class="ic">💛</div>
+    <div><h2>Лояльность · удержание клиентов</h2><div class="who">Программа лояльности · RFM, retention, повторные покупки, отток</div></div>
+    <div class="src-tag">Источник: <b>лояльность</b> (карты) + касса</div>
+  </div>
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">База клиентов</div><div class="kpi-value s">48,2 K</div><div class="kpi-delta up">▲ +1,4 K</div></div>
+    <div class="kpi"><div class="kpi-label">Активны (90 дн)</div><div class="kpi-value s">61%</div><div class="kpi-delta up">▲ +2 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Доля выручки лоял.</div><div class="kpi-value s">58%</div><div class="kpi-delta up">▲ +3 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Повторные покупки</div><div class="kpi-value s">3,4×</div><div class="kpi-delta up">в год</div></div>
+    <div class="kpi"><div class="kpi-label">Retention</div><div class="kpi-value s">72%</div><div class="kpi-delta up">▲ +1,5 п.п.</div></div>
+    <div class="kpi"><div class="kpi-label">Отток (churn)</div><div class="kpi-value s">6,1%</div><div class="kpi-delta up">▼ −0,8 п.п.</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">RFM-сегменты базы</div><div class="chart-sub">Recency × Frequency × Monetary · доля клиентов</div></div></div>
+      <div class="rfm" id="loy-rfm"></div>
+      <div class="impl-note"><strong>Чемпионы и лояльные</strong> дают 58% выручки. <strong>Спящие</strong> и <strong>в зоне риска</strong> — кандидаты на реактивацию.</div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Когортный retention</div><div class="chart-sub">% возврата по месяцам после первой покупки</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-loy-retention"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Новые vs повторные клиенты · 12 мес</div><div class="chart-sub">Доля повторной выручки растёт = здоровая лояльность</div></div></div>
+    <div class="chart-wrap short"><canvas id="ch-loy-repeat"></canvas></div>
+  </div>
+</section>
+
+<!-- ═══════════ 11 · БУХГАЛТЕРИЯ ═══════════ -->
+<section class="tab-content" id="tab-accounting">
+  <div class="sec-head">
+    <div class="ic">🧾</div>
+    <div><h2>Бухгалтерия · налоги, ДЗ/КЗ, первичка</h2><div class="who">Главбух · налоговая нагрузка, дебиторка/кредиторка, платёжный календарь</div></div>
+    <div class="src-tag">Источник: <b>1С</b> + банк · сверено с ФНС</div>
+  </div>
+  <div class="row cols-6">
+    <div class="kpi"><div class="kpi-label">Налоги к уплате</div><div class="kpi-value s">14,8 М</div><div class="kpi-delta flat">срок 28 апр</div></div>
+    <div class="kpi"><div class="kpi-label">Налог. нагрузка</div><div class="kpi-value s">11,2%</div><div class="kpi-delta up">в норме отрасли</div></div>
+    <div class="kpi"><div class="kpi-label">ФОТ + взносы</div><div class="kpi-value s">26,4 М</div><div class="kpi-delta dn">▲ +3%</div></div>
+    <div class="kpi"><div class="kpi-label">Дебиторка</div><div class="kpi-value s">22,1 М</div><div class="kpi-delta dn">▲ +1,8 М ⚠</div></div>
+    <div class="kpi"><div class="kpi-label">Кредиторка</div><div class="kpi-value s">38,4 М</div><div class="kpi-delta flat">в графике</div></div>
+    <div class="kpi"><div class="kpi-label">Первичка собрана</div><div class="kpi-value s">94%</div><div class="kpi-delta dn">6% не закрыто</div></div>
+  </div>
+  <div class="row cols-2">
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Структура налогов · апрель</div><div class="chart-sub">УСН / НДС / взносы / НДФЛ / имущество</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-acc-taxes"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head"><div><div class="chart-title">Дебиторка по срокам</div><div class="chart-sub">Старение задолженности · ₽ млн</div></div></div>
+      <div class="chart-wrap"><canvas id="ch-acc-ar"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><div><div class="chart-title">Платёжный календарь · ближайшие платежи</div><div class="chart-sub">Что и когда платим — синхронизировано с прогнозом кассы</div></div></div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Дата</th><th>Назначение</th><th>Контрагент</th><th class="num">Сумма ₽</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>28.04</td><td>УСН + взносы</td><td>ФНС / СФР</td><td class="num">14 820 000</td><td><span class="bdg bdg-warn">срочно</span></td></tr>
+          <tr><td>30.04</td><td>Аренда (3 точки + цех)</td><td>Арендодатели</td><td class="num">6 400 000</td><td><span class="bdg bdg-info">план</span></td></tr>
+          <tr><td>05.05</td><td>Закупка сырья</td><td>Поставщик «Агро»</td><td class="num">9 100 000</td><td><span class="bdg bdg-bad">сдвинуть ⚠</span></td></tr>
+          <tr><td>10.05</td><td>ЗП аванс</td><td>Сотрудники</td><td class="num">13 200 000</td><td><span class="bdg bdg-info">план</span></td></tr>
+          <tr><td>12.05</td><td>Логистика / доставка</td><td>Курьерская служба</td><td class="num">2 800 000</td><td><span class="bdg bdg-good">ок</span></td></tr>
+          <tr class="total"><td colspan="3">Итого к платежу (14 дней)</td><td class="num">46 320 000</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="page-foot">
+  <h4>Единый финансовый контур · ВИДИМ ДЕНЬГИ</h4>
+  Демо-кабинет «Sample Group» — холдинг 10М+/мес (производство · розница · услуги). Данные собираются автоматически из <strong>1С, банка, CRM, кассы, маркетинга, лояльности и MES</strong> в единое хранилище и визуализируются по ролям. Все цифры в демо — синтетические. Реальная реализация — Yandex DataLens + Managed ClickHouse с Row-Level Security по роли и бизнес-юниту.
+</div>
+
+</main>
+<script>
+/* ===== helpers ===== */
+const C={bg:'#0A1628',cyan:'#4DC3FF',cyanA:'rgba(77,195,255,.18)',mint:'#00D4A8',mintA:'rgba(0,212,168,.18)',coral:'#FF8B6B',coralA:'rgba(255,139,107,.2)',warn:'#FFB85C',bad:'#FF6B6B',purple:'#9b6bff',pink:'#ff6bcb',yellow:'#ffd06b',line:'#1f2f4a',muted:'#A8B5C7'};
+const MO=['Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр'];
+const f1=(n)=>Number(n).toFixed(1).replace('.',',');
+const m=(n)=>f1(n)+' М';
+const pc=(n)=>f1(n)+'%';
+const rub=(n)=>Math.round(n*1e6).toLocaleString('ru-RU')+' ₽';
+Chart.defaults.color=C.muted;Chart.defaults.font.family="Inter,system-ui,sans-serif";Chart.defaults.font.size=11;
+Chart.defaults.plugins.legend.labels.boxWidth=10;Chart.defaults.plugins.legend.labels.padding=12;
+const GRID={color:C.line,drawBorder:false};
+
+/* ===== ОПИУ / ДДС data (Sample Group · Апрель 2026, prev=Март) ===== */
+/* поля: name, fmPlan(норматив % выручки), plan, fact, prev (₽млн), cls, kind */
+const PNL=[
+ {cls:'section',name:'ДОХОДЫ'},
+ {cls:'tot',kind:'inc',name:'Выручка по компании', plan:110.0, fact:112.6, prev:104.3},
+ {cls:'grp',kind:'inc',name:'Розница (зал)',        plan:64.0,  fact:64.8,  prev:61.1},
+ {cls:'sub',kind:'inc',name:'— безнал (Р/С)',       plan:52.0,  fact:53.4,  prev:49.8},
+ {cls:'sub',kind:'inc',name:'— наличные',           plan:12.0,  fact:11.4,  prev:11.3},
+ {cls:'grp',kind:'inc',name:'Производство (B2B-отгрузки)', plan:30.0, fact:31.2, prev:28.4},
+ {cls:'grp',kind:'inc',name:'Услуги · доставка',    plan:12.0,  fact:12.4,  prev:11.2},
+ {cls:'grp',kind:'inc',name:'Агрегаторы · маркетплейсы', plan:4.0, fact:4.2, prev:3.6},
+ {cls:'section',name:'РАСХОДЫ'},
+ {cls:'tot',kind:'exp',name:'Общие расходы',        plan:95.6,  fact:99.5,  prev:93.5},
+ {cls:'grp',kind:'exp',name:'Сырьё / закупка (COGS)', plan:33.0, fact:34.8, prev:31.2},
+ {cls:'grp',kind:'exp',name:'ФОТ + взносы',         plan:26.0,  fact:26.4,  prev:25.1},
+ {cls:'sub',kind:'exp',name:'— производство',       plan:11.0,  fact:11.3,  prev:10.6},
+ {cls:'sub',kind:'exp',name:'— розница (линия)',    plan:9.5,   fact:9.6,   prev:9.2},
+ {cls:'sub',kind:'exp',name:'— АУП / офис',         plan:5.5,   fact:5.5,   prev:5.3},
+ {cls:'grp',kind:'exp',name:'Налоги и сборы',       plan:11.8,  fact:12.1,  prev:11.4},
+ {cls:'grp',kind:'exp',name:'Аренда (точки + цех + склад)', plan:6.2, fact:6.4, prev:6.3},
+ {cls:'grp',kind:'exp',name:'Маркетинг',            plan:5.4,   fact:5.8,   prev:5.2},
+ {cls:'grp',kind:'exp',name:'Логистика / доставка', plan:4.0,   fact:4.6,   prev:3.9},
+ {cls:'grp',kind:'exp',name:'Коммунальные',         plan:2.4,   fact:2.5,   prev:2.3},
+ {cls:'grp',kind:'exp',name:'Прочие / админ',       plan:6.8,   fact:6.9,   prev:6.7},
+ {cls:'section',name:'ИТОГ'},
+ {cls:'profit',kind:'inc',name:'Операционная прибыль (EBITDA)', plan:14.4, fact:13.1, prev:10.8},
+ {cls:'tot',kind:'exp',name:'Выплата учредителям',  plan:8.0,   fact:7.0,   prev:6.5},
+];
+const DDS=[
+ {cls:'section',name:'ПРИТОК'},
+ {cls:'tot',kind:'inc',name:'Итого приток',          plan:114.0, fact:118.2, prev:108.1},
+ {cls:'grp',kind:'inc',name:'Инкассо розницы',       plan:63.0,  fact:64.2,  prev:60.8},
+ {cls:'grp',kind:'inc',name:'Оплаты B2B (производство)', plan:29.0, fact:30.5, prev:27.9},
+ {cls:'grp',kind:'inc',name:'Услуги + агрегаторы',   plan:16.0,  fact:16.8,  prev:15.4},
+ {cls:'grp',kind:'inc',name:'Авансы / займы / прочее', plan:6.0, fact:6.7, prev:4.0},
+ {cls:'section',name:'ОТТОК'},
+ {cls:'tot',kind:'exp',name:'Итого отток',           plan:110.5, fact:114.1, prev:104.0},
+ {cls:'grp',kind:'exp',name:'Закупка сырья / товара', plan:35.0, fact:36.9, prev:33.1},
+ {cls:'grp',kind:'exp',name:'Выплаты ФОТ',           plan:25.5,  fact:25.9,  prev:24.8},
+ {cls:'grp',kind:'exp',name:'Налоги и взносы',       plan:13.0,  fact:14.1,  prev:12.9},
+ {cls:'grp',kind:'exp',name:'Аренда',                plan:6.4,   fact:6.4,   prev:6.3},
+ {cls:'grp',kind:'exp',name:'Маркетинг',             plan:5.4,   fact:5.8,   prev:5.0},
+ {cls:'grp',kind:'exp',name:'Логистика',             plan:4.0,   fact:4.5,   prev:3.8},
+ {cls:'grp',kind:'exp',name:'Инвестиции / оборудование', plan:5.0, fact:6.0, prev:2.0},
+ {cls:'grp',kind:'exp',name:'Прочее / админ',        plan:8.2,   fact:7.5,   prev:7.6},
+ {cls:'grp',kind:'exp',name:'Выплата учредителям',   plan:8.0,   fact:7.0,   prev:6.5},
+ {cls:'section',name:'ИТОГ'},
+ {cls:'profit',kind:'inc',name:'Чистый денежный поток', plan:3.5, fact:4.1, prev:4.1},
+];
+function buildOPIU(tbodyId, rows, baseFact){
+  const tb=document.querySelector('#'+tbodyId+' tbody'); if(!tb) return; tb.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    if(r.cls==='section'){ tr.className='section'; tr.innerHTML='<td colspan="7">'+r.name+'</td>'; tb.appendChild(tr); return; }
+    tr.className=r.cls;
+    const fmPlan=(r.plan/baseFact*100), fmFact=(r.fact/baseFact*100);
+    const statusV=r.plan? (r.fact/r.plan*100):0;
+    // доход/прибыль (inc): ≥100% зелёный, <100% красный · расход (exp): наоборот
+    const stGood = r.kind==='inc' ? Math.round(statusV)>=100 : Math.round(statusV)<=100;
+    const stCls = stGood?'ok':'bad';
+    const dyn=(r.fact-r.prev)/r.prev*100;
+    const dynGood = r.kind==='inc'? dyn>=0 : dyn<=0;
+    const dynCls = Math.abs(dyn)<0.5?'flat':(dynGood?'up':'dn');
+    const dynArrow = dyn>0.1?'▲':(dyn<-0.1?'▼':'■');
+    tr.innerHTML=
+      '<td class="l">'+r.name+'</td>'+
+      '<td class="fm">'+pc(fmPlan)+'</td>'+
+      '<td class="fmf">'+pc(fmFact)+'</td>'+
+      '<td class="plan">'+rub(r.plan)+'</td>'+
+      '<td class="fact">'+rub(r.fact)+'</td>'+
+      '<td class="st '+stCls+'">'+Math.round(statusV)+'%</td>'+
+      '<td class="dyn '+dynCls+'">'+dynArrow+' '+(dyn>=0?'+':'')+f1(dyn)+'%</td>';
+    tb.appendChild(tr);
+  });
+}
+
+/* ===== TAB SWITCH + lazy chart init ===== */
+const inited={};
+function showTab(id){
+  document.querySelectorAll('section.tab-content').forEach(s=>s.classList.toggle('active',s.id==='tab-'+id));
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  if(TI[id] && !inited[id]){ try{TI[id]();}catch(e){console.warn(e);} inited[id]=true; }
+}
+document.querySelectorAll('nav.tabs button').forEach(btn=>btn.addEventListener('click',()=>showTab(btn.dataset.tab)));
+
+/* ===== chart factory shortcuts ===== */
+const lineDS=(label,data,color,fill)=>({label,data,borderColor:color,backgroundColor:fill||color,tension:.35,borderWidth:2,pointRadius:0,pointHoverRadius:4,fill:!!fill});
+const baseOpt=(extra={})=>Object.assign({responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{x:{grid:GRID},y:{grid:GRID}}},extra);
+
+/* ===== data for charts ===== */
+const REV=[82,89,95,98,90,87,93,108,86,92,101,112.6];
+const EB=[10.0,11.6,13.1,14.2,11.9,11.2,12.7,16.8,11.4,13.3,14.6,18.5];
+const MARGIN=REV.map((r,i)=>+(EB[i]/r*100).toFixed(1));
+
+const TI={
+ overview(){
+  new Chart(ch('ch-revenue-trend'),{type:'bar',data:{labels:MO,datasets:[
+    {type:'bar',label:'Выручка',data:REV,backgroundColor:C.cyanA,borderColor:C.cyan,borderWidth:1,borderRadius:4,order:2},
+    {type:'line',label:'EBITDA',data:EB,borderColor:C.mint,backgroundColor:C.mint,tension:.35,borderWidth:2.5,pointRadius:0,yAxisID:'y',order:1}
+  ]},options:baseOpt({plugins:{legend:{display:true,position:'top'}}})});
+  new Chart(ch('ch-units-bar'),{type:'bar',data:{labels:['Розница','Производство','Услуги','Агрегаторы'],datasets:[{data:[64.8,31.2,12.4,4.2],backgroundColor:[C.cyan,C.purple,C.mint,C.coral],borderRadius:5}]},options:baseOpt({indexAxis:'y',plugins:{legend:{display:false}}})});
+  // waterfall
+  const wf=[['Выручка',112.6,C.cyan],['Сырьё',-34.8,C.coralA],['ФОТ',-26.4,C.coralA],['Налоги',-12.1,C.coralA],['Аренда',-6.4,C.coralA],['Прочее',-19.8,C.coralA],['EBITDA',13.1,C.mint]];
+  let run=0; const base=[],val=[]; wf.forEach((w,i)=>{ if(i===0||i===wf.length-1){base.push(0);val.push(Math.abs(w[1]));} else {if(w[1]<0){base.push(run+w[1]);val.push(Math.abs(w[1]));run+=w[1];}else{base.push(run);val.push(w[1]);run+=w[1];}} if(i===0)run=w[1];});
+  new Chart(ch('ch-waterfall'),{type:'bar',data:{labels:wf.map(w=>w[0]),datasets:[{data:base,backgroundColor:'transparent',stack:'s'},{data:val,backgroundColor:wf.map(w=>w[2]),borderRadius:3,stack:'s'}]},options:baseOpt({plugins:{legend:{display:false}}})});
+  new Chart(ch('ch-unit-margin'),{type:'bar',data:{labels:['Розница','Производство','Услуги','Агрегаторы'],datasets:[{data:[23.1,18.4,4.2,9.8],backgroundColor:[C.mint,C.cyan,C.bad,C.warn],borderRadius:4}]},options:baseOpt({plugins:{legend:{display:false}},scales:{x:{grid:GRID},y:{grid:GRID,ticks:{callback:v=>v+'%'}}}})});
+  new Chart(ch('ch-units-donut'),{type:'doughnut',data:{labels:['Розница','Производство','Услуги','Агрегаторы'],datasets:[{data:[64.8,31.2,12.4,4.2],backgroundColor:[C.cyan,C.purple,C.mint,C.coral],borderColor:C.bg,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right'}}}});
+ },
+ pnl(){
+  buildOPIU('pnl-opiu',PNL,112.6);
+  const cats=['Сырьё','ФОТ','Налоги','Аренда','Маркетинг','Логистика','Прочее','EBITDA'];
+  const cols=[C.coral,C.purple,C.warn,C.pink,C.cyan,C.yellow,'#7a8aa0',C.mint];
+  const series=[[34.8,26.4,12.1,6.4,5.8,4.6,9.4,13.1].map((v,i,a)=>+(v/112.6*100).toFixed(1))];
+  const ds=cats.map((c,i)=>({label:c,data:MO.map((_,mi)=>+( [34.8,26.4,12.1,6.4,5.8,4.6,9.4,13.1][i]/112.6*100*(0.92+0.02*Math.sin(mi))).toFixed(1)),backgroundColor:cols[i]}));
+  new Chart(ch('ch-pnl-stack'),{type:'bar',data:{labels:MO,datasets:ds},options:baseOpt({plugins:{legend:{display:true,position:'bottom'}},scales:{x:{grid:GRID,stacked:true},y:{grid:GRID,stacked:true,max:100,ticks:{callback:v=>v+'%'}}}})});
+  new Chart(ch('ch-pnl-donut'),{type:'doughnut',data:{labels:cats.slice(0,7),datasets:[{data:[34.8,26.4,12.1,6.4,5.8,4.6,9.4],backgroundColor:cols.slice(0,7),borderColor:C.bg,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right'}}}});
+ },
+ cashflow(){
+  buildOPIU('dds-opiu',DDS,118.2);
+  const IN=[86,94,99,103,95,90,97,112,88,95,106,118.2], OUT=[80,88,92,96,89,86,91,103,84,90,99,114.1];
+  const FCF=IN.map((v,i)=>+(v-OUT[i]).toFixed(1));
+  new Chart(ch('ch-cash-combo'),{data:{labels:MO,datasets:[
+    {type:'bar',label:'Приток',data:IN,backgroundColor:C.mintA,borderColor:C.mint,borderWidth:1,borderRadius:3},
+    {type:'bar',label:'Отток',data:OUT,backgroundColor:C.coralA,borderColor:C.coral,borderWidth:1,borderRadius:3},
+    {type:'line',label:'Чистый поток',data:FCF,borderColor:C.cyan,borderWidth:2.5,tension:.35,pointRadius:0,yAxisID:'y1'}
+  ]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID},y:{grid:GRID},y1:{position:'right',grid:{display:false}}}})});
+  const A=[14,16,19,21,20,21,20,25,21,22,24,28.4],B=[5,6,6,7,6,6,6,7,5,6,6,7.2],D=[2,2,3,3,3,3,3,4,2,3,3,3.8];
+  new Chart(ch('ch-cash-accounts'),{type:'line',data:{labels:MO,datasets:[
+    lineDS('Опер. счёт',A,C.cyan,C.cyanA),lineDS('Эквайринг',B,C.mint,C.mintA),lineDS('Накопительный',D,C.purple,'rgba(155,107,255,.18)')
+  ]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID},y:{grid:GRID,stacked:true}}})});
+  const days=Array.from({length:60},(_,i)=>'Д'+(i+1));
+  const likely=days.map((_,i)=>28.4+(i<8?-1.1*i:-8.8+ (i-8)*0.22));
+  const best=likely.map((v,i)=>v+i*0.06+1.6), worst=likely.map((v,i)=>v-i*0.09-2.2);
+  new Chart(ch('ch-cash-forecast'),{type:'line',data:{labels:days,datasets:[
+    lineDS('Оптимистичный',best,C.mint),lineDS('Базовый',likely,C.cyan),lineDS('Пессимистичный',worst,C.bad)
+  ]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID,ticks:{maxTicksLimit:12}},y:{grid:GRID}}})});
+ },
+ balance(){
+  new Chart(ch('ch-assets-donut'),{type:'doughnut',data:{labels:['Оборудование','Ремонт/НМА','Запасы','Cash','Дебиторка','Эквайринг'],datasets:[{data:[168,52,64,28.4,22.1,86.5],backgroundColor:[C.cyan,C.purple,C.warn,C.mint,C.coral,C.pink],borderColor:C.bg,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right'}}}});
+  new Chart(ch('ch-liab-donut'),{type:'doughnut',data:{labels:['Уставной','Нераспр. прибыль','Кредиты','Кредиторка','Прочее'],datasets:[{data:[40,229,89,38.4,24.6],backgroundColor:[C.mint,C.cyan,C.bad,C.warn,'#7a8aa0'],borderColor:C.bg,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right'}}}});
+  const dio=[16,15,14,15,15,16,15,13,16,15,15,14],dso=[8,7,7,8,8,8,8,6,8,8,7,7],dpo=[28,29,30,31,30,30,31,32,29,30,30,31];
+  new Chart(ch('ch-wc'),{type:'line',data:{labels:MO,datasets:[lineDS('DIO запасы',dio,C.warn),lineDS('DSO дебиторка',dso,C.cyan),lineDS('DPO кредиторка',dpo,C.mint),lineDS('CCC цикл',dio.map((v,i)=>v+dso[i]-dpo[i]),C.coral)]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID},y:{grid:GRID,ticks:{callback:v=>v+'д'}}}})});
+ },
+ capital(){
+  const CAP=[850,862,878,891,884,895,905,925,910,922,940,945];
+  new Chart(ch('ch-cap-trend'),{type:'line',data:{labels:MO,datasets:[lineDS('Капитализация',CAP,C.cyan,C.cyanA)]},options:baseOpt({plugins:{legend:{display:false}},scales:{x:{grid:GRID},y:{grid:GRID}}})});
+  const br=[['EBITDA×6',948,C.cyan],['+ премия за рост',+90,C.mint],['+ диверсификация',+60,C.mint],['− концентрация',-90,C.coralA],['− зависимость',-63,C.coralA],['Оценка',945,C.purple]];
+  let run=948;const base=[],val=[];br.forEach((w,i)=>{if(i===0||i===br.length-1){base.push(0);val.push(w[1]);run=w[1];}else{if(w[1]<0){base.push(run+w[1]);val.push(-w[1]);run+=w[1];}else{base.push(run);val.push(w[1]);run+=w[1];}}});
+  new Chart(ch('ch-cap-bridge'),{type:'bar',data:{labels:br.map(w=>w[0]),datasets:[{data:base,backgroundColor:'transparent',stack:'s'},{data:val,backgroundColor:br.map(w=>w[2]),borderRadius:3,stack:'s'}]},options:baseOpt({plugins:{legend:{display:false}},scales:{x:{grid:GRID,ticks:{font:{size:9}}},y:{grid:GRID}}})});
+  // sensitivity matrix: rows EBITDA growth, cols multiple
+  const mtx=document.getElementById('cap-matrix'); if(mtx){ const mults=[4.5,5.5,6.0,6.5,7.5]; const grows=[-10,0,10,20,30]; const ebTTM=158;
+   let html='<div class="mh">EBITDA \\ ×</div>'+mults.map(x=>'<div class="mh">'+f1(x)+'×</div>').join('');
+   grows.forEach(g=>{ html+='<div class="mh">'+(g>=0?'+':'')+g+'%</div>';
+     mults.forEach(x=>{ const val=Math.round(ebTTM*(1+g/100)*x); const isBase=(x===6.0&&g===0); const col=val<800?'rgba(255,107,107,.18)':val>1100?'rgba(0,212,168,.2)':'rgba(77,195,255,.14)';
+       html+='<div class="mc" style="background:'+(isBase?'rgba(77,195,255,.35)':col)+';color:#fff">'+val+'</div>'; }); });
+   mtx.innerHTML=html; }
+ },
+ unit(){
+  new Chart(ch('ch-cm'),{type:'bar',data:{labels:['Розница','Производство','Услуги','Агрегаторы'],datasets:[{label:'Маржа вклада %',data:[46,42,31,38],backgroundColor:[C.mint,C.cyan,C.warn,C.purple],borderRadius:4}]},options:baseOpt({plugins:{legend:{display:false}},scales:{x:{grid:GRID},y:{grid:GRID,ticks:{callback:v=>v+'%'}}}})});
+  new Chart(ch('ch-ltvcac'),{type:'bar',data:{labels:['Я.Директ','Таргет','Карты лоял.','Рефералы','Органика'],datasets:[{label:'LTV/CAC',data:[3.8,3.1,7.2,9.4,12.1],backgroundColor:[C.cyan,C.coral,C.mint,C.purple,C.yellow],borderRadius:4}]},options:baseOpt({indexAxis:'y',plugins:{legend:{display:false}}})});
+  const ut=document.querySelector('#unit-table tbody'); if(ut){ const rows=[
+    ['Линейка А (флагман)',420,168,28,224,'53%',8200,'37%','A'],['Линейка B',310,142,24,144,'46%',6400,'21%','A'],
+    ['Услуга «Доставка»',520,260,90,170,'33%',3100,'14%','B'],['Линейка C',260,140,22,98,'38%',4800,'12%','B'],
+    ['Сопутствующие',180,96,12,72,'40%',5200,'9%','B'],['Сезонная позиция',340,210,30,100,'29%',1400,'4%','C'],['Агрегаторы (комиссия)',290,150,80,60,'21%',2600,'3%','C']];
+   ut.innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td><td class="num">'+r[2]+'</td><td class="num">'+r[3]+'</td><td class="num pos">'+r[4]+'</td><td class="num">'+r[5]+'</td><td class="num">'+r[6].toLocaleString('ru-RU')+'</td><td class="num">'+r[7]+'</td><td><span class="bdg bdg-'+r[8]+'">'+r[8]+'</span></td></tr>').join(''); }
+ },
+ production(){
+  const out=[128,132,136,140,130,127,134,150,126,132,138,142],plan=[130,132,134,138,134,132,135,145,130,134,140,140];
+  new Chart(ch('ch-prod-output'),{data:{labels:MO,datasets:[{type:'bar',label:'Выпуск, т',data:out,backgroundColor:C.cyanA,borderColor:C.cyan,borderWidth:1,borderRadius:3},{type:'line',label:'План',data:plan,borderColor:C.warn,borderDash:[5,4],borderWidth:2,pointRadius:0,tension:.3}]},options:baseOpt({plugins:{legend:{display:true,position:'top'}}})});
+  new Chart(ch('ch-prod-cost'),{type:'doughnut',data:{labels:['Сырьё','Упаковка','Энергия','ФОТ цеха','Амортизация'],datasets:[{data:[58,12,9,16,5],backgroundColor:[C.coral,C.warn,C.yellow,C.purple,'#7a8aa0'],borderColor:C.bg,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right'}}}});
+  const fc=[31.1,30.8,30.5,31.0,31.2,31.6,31.0,30.2,32.1,32.6,31.8,33.4],br=[2.1,2.0,1.9,2.2,2.3,2.4,2.1,1.8,2.6,2.7,2.3,2.8];
+  new Chart(ch('ch-prod-fc'),{type:'line',data:{labels:MO,datasets:[lineDS('Material cost %',fc,C.coral,'rgba(255,139,107,.12)'),lineDS('Брак %',br,C.warn)]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID},y:{grid:GRID,ticks:{callback:v=>v+'%'}}}})});
+ },
+ manager(){
+  new Chart(ch('ch-mgr-branches'),{type:'bar',data:{labels:['Север','Центр','Запад','ТЦ Парк'],datasets:[{data:[21.4,18.2,14.1,11.1],backgroundColor:[C.mint,C.cyan,C.cyan,C.warn],borderRadius:5}]},options:baseOpt({plugins:{legend:{display:false}}})});
+  new Chart(ch('ch-mgr-weekday'),{type:'bar',data:{labels:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],datasets:[{data:[7.8,8.2,8.6,9.4,12.1,13.8,11.2],backgroundColor:C.cyanA,borderColor:C.cyan,borderWidth:1,borderRadius:4}]},options:baseOpt({plugins:{legend:{display:false}}})});
+  const hm=document.getElementById('mgr-heatmap'); if(hm){ const days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс']; let html='<div class="hh-day"></div>';
+   for(let h=0;h<24;h++)html+='<div class="hh-h">'+h+'</div>';
+   days.forEach((d,di)=>{ html+='<div class="hh-day">'+d+'</div>';
+     for(let h=0;h<24;h++){ let v=0; if(h>=10&&h<=22){ const peak=(h>=12&&h<=14)||(h>=18&&h<=21); v=(peak?70:35)+(di>=4?25:0)+Math.round(Math.random()*15);} const a=Math.min(v/110,1);
+       html+='<div class="hh-cell" style="background:rgba(77,195,255,'+(a*0.85+0.05)+')" title="'+d+' '+h+':00 — '+v+'">'+(v>40?v:'')+'</div>'; } });
+   hm.innerHTML=html; }
+ },
+ marketing(){
+  new Chart(ch('ch-mkt-channels'),{type:'bar',data:{labels:['Я.Директ','Таргет','Блогеры','Геомаркетинг','Карты лоял.'],datasets:[{label:'Расход',data:[2.1,1.4,0.9,0.7,0.7],backgroundColor:C.coralA,borderColor:C.coral,borderWidth:1,borderRadius:3},{label:'Выручка',data:[9.8,5.2,4.1,2.8,8.0],backgroundColor:C.mintA,borderColor:C.mint,borderWidth:1,borderRadius:3}]},options:baseOpt({plugins:{legend:{display:true,position:'top'}}})});
+  const fn=document.getElementById('mkt-funnel'); if(fn){ const st=[['Показы',1840000,C.cyan],['Клики',92000,'#5fb0e8'],['Лиды',3010,C.mint],['Сделки',747,C.warn]]; const mx=st[0][1];
+   fn.innerHTML=st.map((s,i)=>{ const w=Math.max(s[1]/mx*100,8); const conv=i>0?(s[1]/st[i-1][1]*100).toFixed(1)+'%':'—';
+     return '<div class="fn-row"><div class="fn-bar" style="width:'+w+'%;background:'+s[2]+'">'+s[1].toLocaleString('ru-RU')+'</div><div class="fn-meta"><b>'+s[0]+'</b> · конв. '+conv+'</div></div>'; }).join(''); }
+  const bud=[3.9,4.1,4.4,4.6,4.2,4.0,4.3,5.0,4.4,4.7,5.2,5.8],rev=[18,19,21,22,20,19,21,26,21,23,27,29.9];
+  new Chart(ch('ch-mkt-trend'),{data:{labels:MO,datasets:[{type:'bar',label:'Бюджет',data:bud,backgroundColor:C.coralA,borderColor:C.coral,borderWidth:1,borderRadius:3},{type:'line',label:'Выручка от маркетинга',data:rev,borderColor:C.mint,borderWidth:2.5,tension:.35,pointRadius:0,yAxisID:'y1'}]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID},y:{grid:GRID},y1:{position:'right',grid:{display:false}}}})});
+ },
+ loyalty(){
+  const rfm=document.getElementById('loy-rfm'); if(rfm){ const seg=[['Чемпионы',14,C.mint],['Лояльные',22,'#3fc7e8'],['Перспективные',18,C.cyan],['Новички',12,C.yellow],['В зоне риска',13,C.warn],['Спящие',11,C.coral],['Почти ушли',6,C.bad],['Потеряны',4,'#7a8aa0'],['VIP',3,C.purple],['Возвращённые',2,C.pink]];
+   rfm.innerHTML=seg.map(s=>'<div class="rc" style="background:'+s[2]+'"><span class="n">'+s[1]+'%</span>'+s[0]+'</div>').join(''); }
+  const coh=[100,68,54,46,41,38];
+  new Chart(ch('ch-loy-retention'),{type:'line',data:{labels:['М0','М1','М2','М3','М4','М5'],datasets:[lineDS('Retention %',coh,C.mint,C.mintA)]},options:baseOpt({plugins:{legend:{display:false}},scales:{x:{grid:GRID},y:{grid:GRID,max:100,ticks:{callback:v=>v+'%'}}}})});
+  const nw=[42,40,39,38,40,41,39,44,41,39,38,42],rp=[40,44,47,49,46,45,48,53,48,52,55,58];
+  new Chart(ch('ch-loy-repeat'),{type:'bar',data:{labels:MO,datasets:[{label:'Новые %',data:nw.map(v=>v),backgroundColor:C.cyanA,borderColor:C.cyan,borderWidth:1},{label:'Повторные %',data:rp,backgroundColor:C.mintA,borderColor:C.mint,borderWidth:1}]},options:baseOpt({plugins:{legend:{display:true,position:'top'}},scales:{x:{grid:GRID,stacked:true},y:{grid:GRID,stacked:true,ticks:{callback:v=>v+'%'}}}})});
+ },
+ accounting(){
+  new Chart(ch('ch-acc-taxes'),{type:'doughnut',data:{labels:['УСН/налог на прибыль','НДС','Страх. взносы','НДФЛ','Имущество'],datasets:[{data:[3.8,2.6,5.1,2.9,0.4],backgroundColor:[C.cyan,C.coral,C.purple,C.warn,'#7a8aa0'],borderColor:C.bg,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right'}}}});
+  new Chart(ch('ch-acc-ar'),{type:'bar',data:{labels:['0–30 дн','31–60','61–90','>90 дн'],datasets:[{data:[12.4,5.8,2.6,1.3],backgroundColor:[C.mint,C.cyan,C.warn,C.bad],borderRadius:4}]},options:baseOpt({plugins:{legend:{display:false}}})});
+ }
+};
+function ch(id){const c=document.getElementById(id);return c?c.getContext('2d'):document.createElement('canvas').getContext('2d');}
+/* init first tab */
+TI.overview(); inited.overview=true;
+</script>
+</body>
+</html>
