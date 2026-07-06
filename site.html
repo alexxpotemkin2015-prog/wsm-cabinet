@@ -131,7 +131,7 @@ b,strong{font-weight:600}
 /* steps */
 .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:40px}
 .step{background:#fff;border-radius:6px 0 0;padding:28px 22px}
-.step .n{font-family:var(--f-display);font-size:32px;color:var(--ember);letter-spacing:-.6px}
+.step .n{font-family:var(--f-display);font-size:32px;color:#ff682c;letter-spacing:-.6px}
 .step h4{font-size:17px;margin:16px 0 10px;line-height:1.2}
 .step p{font-size:14px;color:var(--steel)}
 .step .gift{margin-top:14px;font-size:13px;color:var(--brass)}
@@ -170,14 +170,16 @@ b,strong{font-weight:600}
 
 /* pricing steps */
 .pr3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
-.prc{background:#fff;border-radius:6px 0 0;padding:36px 30px;border:1px solid var(--mist);display:flex;flex-direction:column}
-.prk{font-size:13px;color:var(--brass);margin-bottom:12px;font-weight:500}
-.prc h3{font-size:20px;margin-bottom:16px;line-height:1.2}
-.prc .price{font-family:var(--f-display);font-size:32px;letter-spacing:-.6px;margin-bottom:6px}
-.prc .price .plus{display:block;font-size:14px;color:var(--slate);margin-top:6px;font-family:var(--f-body)}
+.prc{background:var(--navy);border-radius:6px 0 0;padding:36px 30px;border:1px solid #1b3f63;display:flex;flex-direction:column;color:#c4d1de}
+.prk{font-size:13px;color:#9fb4cb;margin-bottom:12px;font-weight:500}
+.prc h3{font-size:20px;margin-bottom:16px;line-height:1.2;color:#fff}
+.prc .price{font-family:var(--f-display);font-size:32px;letter-spacing:-.6px;margin-bottom:6px;color:#fff}
+.prc .price .plus{display:block;font-size:14px;color:#9fb4cb;margin-top:6px;font-family:var(--f-body)}
 .prc ul{list-style:none;margin:22px 0;flex:1}
-.prc li{font-size:14px;color:var(--steel);padding:9px 0;padding-left:22px;position:relative;border-top:1px solid var(--mist)}
-.prc li::before{content:"";position:absolute;left:0;top:16px;width:9px;height:1px;background:var(--ember)}
+.prc li{font-size:14px;color:#c4d1de;padding:9px 0;padding-left:22px;position:relative;border-top:1px solid #244b70}
+.prc li::before{content:"";position:absolute;left:0;top:16px;width:9px;height:1px;background:#ff682c}
+.prc .btn-ghost{border:1px solid rgba(255,255,255,.5);color:#fff}
+.prc .btn-ghost:hover{background:#fff;color:var(--navy)}
 .disc{text-align:center;font-size:14px;color:var(--slate);margin-top:28px}
 
 /* calculator */
@@ -338,8 +340,8 @@ footer .fcol a:hover{color:var(--ember)}
       <div class="dcard c1">
         <div class="dcard-h"><span class="t">P&amp;L · Все направления · Май 2026</span><span class="s">обновлено только что</span></div>
         <svg class="spark reveal" viewBox="0 0 320 64" preserveAspectRatio="none">
-          <polyline fill="none" stroke="#c3bcae" stroke-width="1.5" points="0,48 40,44 80,46 120,38 160,40 200,30 240,32 280,22 320,18"/>
-          <polyline fill="none" stroke="#202020" stroke-width="2" points="0,52 40,50 80,42 120,44 160,34 200,36 240,26 280,28 320,14"/>
+          <polyline fill="none" stroke="#2fa36b" stroke-width="2" points="0,48 40,44 80,46 120,38 160,40 200,30 240,32 280,22 320,18"/>
+          <polyline fill="none" stroke="#ff682c" stroke-width="2.5" points="0,52 40,50 80,42 120,44 160,34 200,36 240,26 280,28 320,14"/>
         </svg>
         <div class="stat-row"><span class="k">Выручка</span><span class="v">42,8 М<span class="up">▲ +12%</span></span></div>
         <div class="stat-row"><span class="k">Прибыль</span><span class="v">7,9 М<span class="up">▲ +12%</span></span></div>
