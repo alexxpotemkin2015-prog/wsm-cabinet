@@ -12,7 +12,7 @@
 :root{
   --graphite:#202020; --canvas:#ffffff; --ash:#efefef; --fog:#f5f5f5;
   --ivory:#ebe6dd; --steel:#4d4d4d; --slate:#828282; --mist:#e8e8e8;
-  --ember:#ff682c; --brass:#816729;
+  --ember:#202020; --brass:#202020;
   --f-display:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --f-body:'Inter', ui-sans-serif, system-ui, sans-serif;
   --max:1200px; --sec-gap:80px; --card-pad:40px;
@@ -256,9 +256,9 @@ footer .fcol a:hover{color:var(--ember)}
   .reveal.d4{transition-delay:.32s}
 }
 .vcard,.pcard,.tcard,.step,.ccard,.prc,.tcol,.dcard{transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
-.vcard:hover,.tcard:hover,.ccard:hover,.prc:hover,.step:hover{transform:translateY(-5px)}
-.tcol:hover{transform:translateY(-5px)}
-.dcard.c1:hover{transform:translateY(-4px)}
+.vcard:hover,.tcard:hover,.ccard:hover,.prc:hover,.step:hover{transform:translateY(-8px) scale(1.035);box-shadow:0 22px 46px -26px rgba(32,32,32,.35)}
+.tcol:hover{transform:translateY(-8px) scale(1.035)}
+.dcard.c1:hover{transform:translateY(-6px) scale(1.03)}
 .spark polyline{stroke-dasharray:640;stroke-dashoffset:640;transition:stroke-dashoffset 1.6s ease .3s}
 .spark.draw polyline{stroke-dashoffset:0}
 .spark polyline:nth-child(1){transition-delay:.3s}
@@ -272,6 +272,13 @@ footer .fcol a:hover{color:var(--ember)}
 .pill a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;
   background:var(--ember);transform:scaleX(0);transform-origin:center;transition:transform .3s}
 .pill a:hover::after{transform:scaleX(1)}
+@media(prefers-reduced-motion:no-preference){
+@keyframes btnBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.btn-fill{animation:btnBounce 2.6s ease-in-out infinite}
+.btn-fill:hover{animation:btnBounce .42s ease-in-out infinite}
+}
+.h-sec .caret{display:inline-block;width:3px;height:.82em;background:currentColor;margin-left:3px;vertical-align:-0.04em;animation:caretBlink .7s step-end infinite}
+@keyframes caretBlink{50%{opacity:0}}
 
 @media(max-width:960px){
   .hero-grid,.note-grid,.calc{grid-template-columns:1fr}
@@ -309,7 +316,7 @@ footer .fcol a:hover{color:var(--ember)}
     </div>
     <div class="nav-cta">
       <span class="lang">RU</span>
-      <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Посмотреть демо</a>
+      <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Связаться</a>
     </div>
   </div>
 </nav>
@@ -322,7 +329,7 @@ footer .fcol a:hover{color:var(--ember)}
       <h1>Видим <span class="em">деньги</span> вашего бизнеса.</h1>
       <p class="lead">Управленческий учёт и 25+ отчётов на промышленной BI-платформе Yandex DataLens. Внедряем под ключ — снимаем весь цикл работ.</p>
       <div class="hero-cta">
-        <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Посмотреть демо →</a>
+        <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Связаться →</a>
         <a href="#cabinet" class="btn btn-ghost">Открыть пример дашборда →</a>
       </div>
       <p class="hero-note">Настройка баз и порядок в документах — <span class="u-ember">в подарок</span>.</p>
@@ -331,8 +338,8 @@ footer .fcol a:hover{color:var(--ember)}
       <div class="dcard c1">
         <div class="dcard-h"><span class="t">P&amp;L · Все направления · Май 2026</span><span class="s">обновлено только что</span></div>
         <svg class="spark reveal" viewBox="0 0 320 64" preserveAspectRatio="none">
-          <polyline fill="none" stroke="#816729" stroke-width="1.5" points="0,48 40,44 80,46 120,38 160,40 200,30 240,32 280,22 320,18"/>
-          <polyline fill="none" stroke="#ff682c" stroke-width="2" points="0,52 40,50 80,42 120,44 160,34 200,36 240,26 280,28 320,14"/>
+          <polyline fill="none" stroke="#c3bcae" stroke-width="1.5" points="0,48 40,44 80,46 120,38 160,40 200,30 240,32 280,22 320,18"/>
+          <polyline fill="none" stroke="#202020" stroke-width="2" points="0,52 40,50 80,42 120,44 160,34 200,36 240,26 280,28 320,14"/>
         </svg>
         <div class="stat-row"><span class="k">Выручка</span><span class="v">42,8 М<span class="up">▲ +12%</span></span></div>
         <div class="stat-row"><span class="k">Прибыль</span><span class="v">7,9 М<span class="up">▲ +12%</span></span></div>
@@ -399,6 +406,8 @@ footer .fcol a:hover{color:var(--ember)}
         <div class="cbadge">убыточные центры видны за <span class="u">2 недели</span></div>
       </div>
     </div>
+
+    <div style="text-align:center;margin-top:44px"><a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Связаться →</a></div>
 
     <div class="marq">
       <div class="marq-t">Подключаем 30+ источников по API — банки, iiko, 1С, маркетплейсы, CRM</div>
@@ -472,6 +481,7 @@ footer .fcol a:hover{color:var(--ember)}
         </div>
       </div>
     </div>
+    <div style="text-align:center;margin-top:44px"><a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Связаться →</a></div>
   </div>
 </section>
 
@@ -624,7 +634,7 @@ footer .fcol a:hover{color:var(--ember)}
     <h2>Покажите бизнес — мы <span class="em">покажем деньги</span>.</h2>
     <p class="lead">30 минут демо: продукт, кабинет и объём внедрения под ключ под вашу финмодель.</p>
     <div class="hero-cta">
-      <a href="https://t.me/m/ZJppNxLpYjNi" class="btn btn-fill">Посмотреть демо →</a>
+      <a href="https://t.me/m/ZJppNxLpYjNi" class="btn btn-fill">Связаться →</a>
       <a href="#pricing" class="btn btn-ghost">Смотреть стоимость</a>
     </div>
     <p class="hero-note" style="text-align:center">Внедрение под ключ. Снимаем весь цикл работ.</p>
@@ -697,6 +707,17 @@ footer .fcol a:hover{color:var(--ember)}
     requestAnimationFrame(tick);
   }
 
+  function typeIt(el){
+    if(el.dataset.typed) return; el.dataset.typed='1';
+    var parts = el.innerHTML.split(/(<br\s*\/?>)/i), seq=[];
+    parts.forEach(function(t){ if(/^<br/i.test(t)){seq.push('<br>');} else {for(var i=0;i<t.length;i++)seq.push(t[i]);} });
+    el.innerHTML='<span class="caret"></span>';
+    var i=0, caret=el.querySelector('.caret');
+    (function step(){
+      if(i<seq.length){ caret.insertAdjacentHTML('beforebegin', seq[i]); i++; setTimeout(step, seq[i-1]==='<br>'?90:26); }
+      else { caret.remove(); }
+    })();
+  }
   if(reduce || !('IntersectionObserver' in window)){
     document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
     document.querySelectorAll('.count').forEach(countUp);
@@ -710,6 +731,7 @@ footer .fcol a:hover{color:var(--ember)}
       var el = en.target;
       el.classList.add('in');
       if(el.classList.contains('spark')) el.classList.add('draw');
+      if(el.classList.contains('h-sec')) typeIt(el);
       el.querySelectorAll && el.querySelectorAll('.count').forEach(countUp);
       if(el.classList.contains('count')) countUp(el);
       io.unobserve(el);
