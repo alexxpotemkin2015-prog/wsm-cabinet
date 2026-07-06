@@ -27,8 +27,8 @@ a{color:inherit;text-decoration:none}
 img{max-width:100%}
 
 /* nav */
-.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);
-  backdrop-filter:blur(12px);border-bottom:1px solid var(--mist)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,9,12,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid #1c1c1c}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:72px}
 .brand{font-family:var(--f-display);font-size:18px;letter-spacing:-0.02em;display:flex;align-items:center;gap:9px}
 .brand .dot{width:9px;height:9px;border-radius:2px 0 0;background:var(--navy)}
@@ -40,11 +40,19 @@ img{max-width:100%}
 .lang{font-family:var(--f-display);font-size:15px;color:var(--slate)}
 .btn{font-family:var(--f-display);font-size:15px;padding:10px 20px;border-radius:0;
   display:inline-block;transition:.2s;letter-spacing:-0.02em;cursor:pointer;border:none}
-.btn-fill{background:var(--graphite);color:#fff}
+.btn-fill{background:var(--graphite);color:#fff;font-weight:700}
 .btn-fill:hover{background:#000}
 .btn-ghost{background:transparent;border:1px solid var(--graphite);color:var(--graphite)}
 .btn-ghost:hover{background:var(--graphite);color:#fff}
 .nav-toggle{display:none;font-size:24px;background:none;border:none;cursor:pointer}
+.nav .brand{color:#fff}
+.nav .brand .dot{background:#fff}
+.nav .pill{background:#17181c}
+.nav .pill a{color:#fff}
+.nav .pill a:hover{color:#fff}
+.nav .pill a::after{background:#fff}
+.nav .lang{color:#9a9a9a}
+.nav .btn-fill{border:1px solid #2f2f2f}
 
 /* section rhythm */
 section{padding:var(--sec-gap) 0}
@@ -99,6 +107,7 @@ b,strong{font-weight:600}
 .vf-live i{width:6px;height:6px;border-radius:50%;background:#ff682c}
 .vframe iframe{display:block;width:100%;height:640px;border:0}
 .vframe-cap{margin-top:14px;font-size:13px;color:var(--slate)}
+.vframe-cap a{color:#000;border-bottom-color:#000}
 @media(max-width:640px){.vframe iframe{height:460px}}
 
 /* values */
@@ -328,11 +337,11 @@ footer .fcol a:hover{color:var(--ember)}
   <div class="wrap hero-grid">
     <div>
       <span class="eyebrow">Управленческий учёт · промышленный BI</span>
-      <h1>Видим <span class="em">деньги</span> вашего бизнеса.</h1>
+      <h1>Видим <span class="em">деньги</span> вашего бизнеса</h1>
       <p class="lead">Управленческий учёт и 25+ отчётов на промышленной BI-платформе Yandex DataLens. Внедряем под ключ — снимаем весь цикл работ.</p>
       <div class="hero-cta">
         <a href="https://t.me/m/iMPBYVs9Zjli" class="btn btn-fill">Связаться →</a>
-        <a href="#cabinet" class="btn btn-ghost">Открыть пример дашборда →</a>
+        <a href="#cabinet" class="btn btn-fill">Открыть пример дашборда →</a>
       </div>
       <p class="hero-note">Настройка баз и порядок в документах — <span class="u-ember">в подарок</span>.</p>
     </div>
@@ -368,8 +377,8 @@ footer .fcol a:hover{color:var(--ember)}
 <!-- LIVE CABINET (from factory) -->
 <section id="cabinet">
   <div class="wrap">
-    <span class="eyebrow">Живой кабинет · CEO / Инвесторы</span>
-    <h2 class="h-sec">Так это выглядит внутри.</h2>
+    <span class="eyebrow">Живой кабинет · CEO</span>
+    <h2 class="h-sec">Так выглядит внутри.</h2>
     <p class="lead">Реальный управленческий кабинет: P&amp;L, БДДС, баланс, капитализация и юнит-экономика — на одном экране. Покликайте прямо здесь.</p>
     <div class="vframe reveal">
       <div class="vframe-bar">
@@ -386,7 +395,7 @@ footer .fcol a:hover{color:var(--ember)}
 <section id="cases">
   <div class="wrap">
     <span class="eyebrow">Результат</span>
-    <h2 class="h-sec">Что меняется в бизнесе</h2>
+    <h2 class="h-sec">Что меняется в процессах бизнеса.</h2>
     <p class="lead">Три вещи, которые собственник получает с первого месяца работы кабинета.</p>
     <div class="cases">
       <div class="ccard">
@@ -399,12 +408,12 @@ footer .fcol a:hover{color:var(--ember)}
         <div class="ck">02 · Точность</div>
         <h3>Снижение ошибок</h3>
         <p>Авто-разнесение и сверка вместо ручных таблиц. Одна выручка вместо трёх в сайте, кассе и банке. Человеческий фактор убран — цифрам можно верить.</p>
-        <div class="cbadge"><span class="u">99,4%</span> точность · ручные сверки убраны</div>
+        <div class="cbadge"><span class="u">99,4%</span> точность · без ручных сверок</div>
       </div>
       <div class="ccard">
         <div class="ck">03 · Эффективность</div>
         <h3>Оптимизация расходов</h3>
-        <p>Видно, где течёт маржа: убыточные точки, дорогие поставщики, кассовые окна. Решения на данных дают конкретную экономию.</p>
+        <p>Видно, где уходит маржа: убыточные точки, дорогие поставщики, кассовые разрывы или отсутствие динамики по бизнес процессу. Решения на данных дают конкретную экономию.</p>
         <div class="cbadge">убыточные центры видны за <span class="u">2 недели</span></div>
       </div>
     </div>
@@ -503,7 +512,7 @@ footer .fcol a:hover{color:var(--ember)}
       <div class="tcard">
         <div class="tk">Database</div>
         <h3>ClickHouse · РФ</h3>
-        <p>Колоночная СУБД. Аналитика по миллиардам строк за секунды. Серверы в Москве — данные не покидают РФ.</p>
+        <p>Колоночная СУБД. Аналитика по миллиардам строк за секунды. Ваши данные не покидают РФ.</p>
         <div class="cert">ISO/IEC 27001 / 27017 / 27018</div>
       </div>
       <div class="tcard">
@@ -582,13 +591,13 @@ footer .fcol a:hover{color:var(--ember)}
 <section id="pricing" class="band-ash">
   <div class="wrap">
     <span class="eyebrow">Стоимость внедрения</span>
-    <h2 class="h-sec">Три услуги — собираем контур под ключ.</h2>
+    <h2 class="h-sec">Три услуги — собираем единый контур под ключ.</h2>
     <p class="lead">Платите только за то, что нужно. Считаем под масштаб вашего бизнеса. Точную смету пришлём после бесплатного аудита.</p>
     <div class="pr3">
       <div class="prc">
         <div class="prk">Шаг 1 · методология</div>
-        <h3>Постановка управленческого учёта</h3>
-        <div class="price">от 120 000 ₽<span class="plus">+ 15 000 ₽ за след. точку</span></div>
+        <h3>Постановка и внедрение управленческого учёта</h3>
+        <div class="price">от 150 000 ₽</div>
         <ul>
           <li>План статей ДДС, ОПиУ, управленческий баланс</li>
           <li>ЦФО и финансовая структура</li>
@@ -600,8 +609,8 @@ footer .fcol a:hover{color:var(--ember)}
       </div>
       <div class="prc">
         <div class="prk">Шаг 2 · данные</div>
-        <h3>Настройка учётных программ</h3>
-        <div class="price">от 150 000 ₽<span class="plus">+ 25 000 ₽ за след. точку</span></div>
+        <h3>Настройка учётных программ и обучение работе с данными</h3>
+        <div class="price">от 150 000 ₽</div>
         <ul>
           <li>Настройка 1С, iiko, r_keeper и других баз</li>
           <li>Автоматизация управленческой отчётности</li>
@@ -612,8 +621,8 @@ footer .fcol a:hover{color:var(--ember)}
       </div>
       <div class="prc">
         <div class="prk">Шаг 3 · ядро</div>
-        <h3>Разработка BI-дашборда</h3>
-        <div class="price">от 300 000 ₽<span class="plus">+ 40 000 ₽ за след. точку</span></div>
+        <h3>Разработка BI-дашборда и запуск цикла аналитики в компании</h3>
+        <div class="price">от 300 000 ₽</div>
         <ul>
           <li>Дашборды ДДС, ОПиУ, баланс на Yandex DataLens</li>
           <li>Платёжный календарь и юнит-экономика</li>
