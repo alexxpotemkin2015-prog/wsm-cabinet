@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ВИДИМ ДЕНЬГИ · BI-кабинет · ТЕПЛО ХЛЕБА (референс, демо-данные)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+ --bg:#eef1f5; --panel:#ffffff; --panel2:#f7f9fb; --soft:#eef2f7; --line:#e3e7ee;
+ --ink:#1b2432; --muted:#6c7684; --dim:#9aa2ad;
+ --blue:#4d8af0; --cyan:#2aa9e0; --green:#1f9d57; --red:#d94b3f; --amber:#d68a10; --purple:#7c56c9; --teal:#1a9fb5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px}
+.top{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#fff,#f6f8fb);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:11px 20px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand .logo{width:34px;height:34px;border-radius:50%;border:2px solid #cdddf7;color:#3b6fc4;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px}
+.brand b{font-weight:800;font-size:15px;letter-spacing:.3px}
+.brand small{display:block;color:var(--muted);font-size:10.5px;letter-spacing:1.5px;font-weight:600}
+.demo{background:#fff4e0;color:#b3701a;border:1px solid #f0d3a0;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700}
+.filters{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filters .fg{display:flex;flex-direction:column;gap:2px}
+.filters label{font-size:9.5px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.filters select{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);cursor:pointer;min-width:150px}
+.upd{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.upd .g{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(31,157,87,.14)}
+.src-bar{background:#f7f9fc;border-bottom:1px solid var(--line);padding:9px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:58px;z-index:20}
+.src-bar .lbl{font-size:10px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;font-weight:700;margin-right:4px}
+.chip-src{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12px;color:var(--ink)}
+.chip-src .d{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.chip-src.warn .d{background:var(--amber)}
+.chip-src span{color:var(--muted)}
+.shell{display:flex;min-height:calc(100vh - 100px)}
+.side{width:242px;flex:none;background:#fff;border-right:1px solid var(--line);padding:10px 8px;position:sticky;top:100px;height:calc(100vh - 100px);overflow:auto}
+.side .grp{font-size:10px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin:14px 10px 5px;font-weight:800}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;color:var(--ink);text-decoration:none;font-size:13.5px;cursor:pointer;font-weight:500}
+.nav a .ic{width:18px;text-align:center}
+.nav a:hover{background:var(--soft)}
+.nav a.on{background:#e9f1fe;color:#1e5fd0;font-weight:700;box-shadow:inset 2px 0 0 var(--blue)}
+.main{flex:1;padding:20px 22px 60px;min-width:0}
+.head{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}
+.head h1{font-size:21px;font-weight:800}
+.head .sub{color:var(--muted);font-size:13px}
+.role-note{background:#eef4ff;border:1px solid #d5e3fb;color:#2a5bb0;border-radius:9px;padding:8px 12px;font-size:12.5px;margin:12px 0 16px}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:14px}
+.k12{grid-template-columns:repeat(6,1fr);margin-bottom:14px}
+.k6{grid-template-columns:repeat(3,1fr);margin-bottom:14px}
+@media(max-width:1400px){.k12{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1200px){.kpis{grid-template-columns:repeat(2,1fr)}.k12{grid-template-columns:repeat(3,1fr)}.k6{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.kpi .t{color:var(--muted);font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.kpi .b{background:#f2f6fc;border:1px solid var(--line);border-radius:7px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--blue);flex:none}
+.kpi .v{font-size:26px;font-weight:800;margin-top:9px;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;margin-top:6px;font-weight:700}
+.up{color:var(--green)} .down{color:var(--red)} .warn{color:var(--amber)} .neu{color:var(--muted)}
+.cards{grid-template-columns:repeat(12,1fr)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;min-width:0}
+.card .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+.card .ch .ttl{font-weight:700;font-size:14px}
+.card .ch .src{font-size:10px;color:var(--dim);background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-weight:600;white-space:nowrap}
+.c12{grid-column:span 12}.c8{grid-column:span 8}.c7{grid-column:span 7}.c6{grid-column:span 6}.c5{grid-column:span 5}.c4{grid-column:span 4}.c3{grid-column:span 3}
+@media(max-width:1100px){.c8,.c7,.c6,.c5,.c4,.c3{grid-column:span 12}}
+.chartbox{position:relative;height:258px}.chartbox.sm{height:212px}.chartbox.lg{height:300px}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th,table.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+table.tbl th{color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+table.tbl td.num,table.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700}
+.pA{background:#e5f6ec;color:#1b8a4e}.pB{background:#fff3d6;color:#a9760f}.pC{background:#fde8e5;color:#b23a2c}
+.opanel .orow{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.opanel .orow:last-child{border-bottom:none}
+.opanel .sv{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none}
+.sv.r{background:#fde8e5;color:#b23a2c}.sv.a{background:#fff3d6;color:#a9760f}.sv.g{background:#e5f6ec;color:#1b8a4e}.sv.b{background:#e9f1fe;color:#2a5bb0}
+.opanel .om{font-size:12.5px;line-height:1.5;color:#2f3a49}
+.hl{background:#fde8e5;color:#b23a2c;border-radius:5px;padding:0 5px;font-weight:700}
+.hl.g{background:#e5f6ec;color:#1b8a4e}
+.alert{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:#fff;margin-bottom:10px}
+.alert .dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.alert .m{font-size:13.5px}.alert .m b{font-weight:700}.alert .m span{color:var(--muted);font-size:12px}
+.sev-red{background:var(--red)}.sev-amber{background:var(--amber)}.sev-blue{background:var(--blue)}.sev-green{background:var(--green)}
+.stopchips{display:flex;flex-wrap:wrap;gap:8px}
+.stopchips .s{background:#fde8e5;color:#b23a2c;border:1px solid #f5cfc8;border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:600}
+.foot{color:var(--dim);font-size:12px;margin-top:22px;border-top:1px solid var(--line);padding-top:14px;line-height:1.6}
+.mini{font-size:12px;color:var(--muted);margin-top:4px}.bar-hint{font-size:11.5px;color:var(--dim);margin-top:8px}
+.toggle{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.toggle button{background:transparent;border:none;color:var(--muted);padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600}
+.toggle button.on{background:#e9f1fe;color:#1e5fd0}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><div class="logo">WSM</div><div><b>ТЕПЛО ХЛЕБА</b><small>ВИДИМ ДЕНЬГИ · BI-КАБИНЕТ · РЕФЕРЕНС</small></div></div>
+  <span class="demo">ДЕМО-ДАННЫЕ</span>
+  <div class="filters">
+    <div class="fg"><label>Период</label><select id="fPeriod"><option value="7">7 дней</option><option value="30" selected>30 дней</option><option value="90">90 дней</option></select></div>
+    <div class="fg"><label>Бизнес-юнит</label><select id="fStore"><option value="all" selected>Все точки</option><option value="s1">Точка 1 · Героев 5</option><option value="s2">Точка 2 · Косинское 6</option></select></div>
+    <div class="fg"><label>Сравнить</label><select id="fCmp"><option>Прошлый период</option><option>Прошлый год</option><option>План</option></select></div>
+    <div class="fg"><label>Роль</label><select id="fRole"><option value="owner" selected>Собственник</option><option value="manager">Управляющий</option><option value="chef">Шеф-повар</option></select></div>
+    <div class="upd"><span class="g"></span>Обновлено 18.07.2026 · 09:10 МСК</div>
+  </div>
+</div>
+<div class="src-bar">
+  <span class="lbl">Источники</span>
+  <span class="chip-src"><span class="d"></span>iiko <span>· продажи/склад</span></span>
+  <span class="chip-src"><span class="d"></span>Банк <span>· Сбербанк</span></span>
+  <span class="chip-src"><span class="d"></span>Эквайринг <span>· сверка</span></span>
+  <span class="chip-src"><span class="d"></span>1С <span>· учёт</span></span>
+  <span class="chip-src warn"><span class="d"></span>Маркетинг <span>· задержка 2ч</span></span>
+  <span class="chip-src"><span class="d"></span>Лояльность <span>· карты</span></span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <div class="grp">Топ</div><nav class="nav" id="nav0"></nav>
+    <div class="grp">Оперативно</div><nav class="nav" id="nav1"></nav>
+    <div class="grp">Аналитика</div><nav class="nav" id="nav2"></nav>
+    <div class="grp">Финансы</div><nav class="nav" id="nav3"></nav>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+function rng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+const R=(a,b,rn)=>a+(b-a)*rn();
+const money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const money0=n=>Math.round(n).toLocaleString('ru-RU');
+const mln=n=>(n/1e6).toFixed(1)+' М';
+const pct=n=>(n>=0?'+':'')+n.toFixed(1)+'%';
+const MO12=['Авг','Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн','Июл'];
+const CATS=['Пицца','Суши/роллы','СЕТЫ','Салаты','Бар','Супы','Десерты','Завтраки','Соусы'];
+const C={blue:'#4d8af0',green:'#23b26d',red:'#e0574a',amber:'#f5a623',purple:'#8a63d2',teal:'#2bb4c9',ink:'#1b2432',mut:'#9aa2ad',soft:'#eef2f7'};
+let charts=[];
+function destroyCharts(){charts.forEach(c=>{try{c.destroy()}catch(e){}});charts=[];}
+function mk(id,cfg){const el=document.getElementById(id);if(!el)return;const ch=new Chart(el,cfg);charts.push(ch);return ch;}
+Chart.defaults.font.family="Inter,-apple-system,Segoe UI,Roboto,Arial,sans-serif";
+Chart.defaults.color="#6c7684";Chart.defaults.font.size=12;
+Chart.defaults.plugins.legend.labels.boxWidth=12;Chart.defaults.plugins.legend.labels.boxHeight=12;
+Chart.defaults.scale.grid.color="rgba(0,0,0,.06)";
+
+function scale(){const v=document.getElementById('fStore').value;return v==='s1'?0.62:v==='s2'?0.38:1;}
+function periodDays(){return +document.getElementById('fPeriod').value;}
+function days(n){const arr=[];const t=new Date(2026,6,16);for(let i=n-1;i>=0;i--){const d=new Date(t);d.setDate(t.getDate()-i);arr.push(d);}return arr;}
+const fmtD=d=>('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2);
+function series12(rn,base,drift){let v=base*R(0.80,0.94,rn);const a=[];for(let i=0;i<12;i++){v=v*(1+drift+R(-0.05,0.06,rn));a.push(Math.round(v));}return a;}
+function dcell(cur,prev){const d=(cur/prev-1)*100;const up=d>=0;return `<td class="num" style="color:${up?C.green:C.red};font-weight:700">${up?'▲':'▼'} ${(up?'+':'')+d.toFixed(1)}%</td>`;}
+
+function kpi(t,v,d,cls,badge){const ar=cls==='up'?'▲ ':cls==='down'?'▼ ':'';return `<div class="kpi"><div class="t"><span>${t}</span>${badge?`<span class="b">${badge}</span>`:''}</div><div class="v">${v}</div><div class="d ${cls||'neu'}">${d?ar+d:''}</div></div>`;}
+function card(cls,ttl,src,inner){return `<div class="card ${cls}"><div class="ch"><div class="ttl">${ttl}</div><div class="src">${src}</div></div>${inner}</div>`;}
+function cb(id,sz){return `<div class="chartbox ${sz||''}"><canvas id="${id}"></canvas></div>`;}
+
+const TABS=[
+{g:0,id:'overview',ic:'🗂️',t:'Период · Сводка',sub:'Обзор собственника — здоровье бизнеса на одном экране',render:renderOverview},
+{g:1,id:'today',ic:'📊',t:'Сегодня',sub:'Операционный пульс — факт против плана',render:renderToday},
+{g:1,id:'sales',ic:'💳',t:'Продажи',sub:'Выручка, чеки, пики, топ/антитоп',render:renderSales},
+{g:1,id:'cost',ic:'🍳',t:'Себестоимость и списания',sub:'Food Cost, списания, перепроизводство',render:renderCost},
+{g:1,id:'staff',ic:'👥',t:'Персонал',sub:'ФОТ %, выработка, смены',render:renderStaff},
+{g:1,id:'stock',ic:'📦',t:'Запасы (оперативно)',sub:'Заканчивается, затоварено, стоп-лист, сроки',render:renderStock},
+{g:1,id:'alerts',ic:'🔔',t:'Задачи и алерты',sub:'Отклонения, требующие действия',render:renderAlerts},
+{g:2,id:'sku',ic:'🧮',t:'Рентабельность SKU',sub:'Маржа по каждой позиции, ABC',render:renderSKU},
+{g:2,id:'price',ic:'🏷️',t:'Мониторинг входящей цены',sub:'Динамика закупочных цен vs прошлая',render:renderPrice},
+{g:3,id:'pl',ic:'📈',t:'ОПиУ · P&L',sub:'Прибыли и убытки · динамика 12 месяцев',render:renderPL},
+{g:3,id:'bal',ic:'⚖️',t:'Баланс · Капитал',sub:'Активы и пассивы · динамика 12 месяцев',render:renderBalance},
+{g:3,id:'cf',ic:'💧',t:'БДДС · Cash',sub:'Притоки/оттоки, остаток, прогноз',render:renderCF},
+];
+let active='overview';
+function buildNav(){
+ [0,1,2,3].forEach(g=>{const el=document.getElementById('nav'+g);el.innerHTML=TABS.filter(t=>t.g===g).map(t=>`<a data-id="${t.id}" class="${t.id===active?'on':''}"><span class="ic">${t.ic}</span>${t.t}</a>`).join('');
+  el.querySelectorAll('a').forEach(a=>a.onclick=()=>{active=a.dataset.id;buildNav();renderActive();window.scrollTo(0,0);});});
+}
+function roleNote(){const r=document.getElementById('fRole').value;
+ const map={owner:'Роль «Собственник»: полный доступ ко всем экранам, обеим точкам и финансам.',
+  manager:'Роль «Управляющий точки»: операционные экраны своей точки. Финансы скрыты — RLS.',
+  chef:'Роль «Шеф-повар»: себестоимость, списания, запасы. Выручка и финансы скрыты — RLS.'};
+ return `<div class="role-note">🔐 ${map[r]} · Реализация — Yandex DataLens + Managed ClickHouse с Row-Level Security по роли и точке.</div>`;}
+function renderActive(){
+ destroyCharts();
+ const tab=TABS.find(t=>t.id===active);const main=document.getElementById('main');
+ main.innerHTML=`<div class="head"><h1>${tab.ic} ${tab.t}</h1><div class="sub">${tab.sub}</div></div>`+roleNote()+`<div id="body"></div>`+
+  `<div class="foot">Прототип-референс для разработчика · внешний вид — DataLens · <b>данные демонстрационные (синтетические)</b>. Единый источник — iiko (OLAP «Продажи»/«Склад», приходные накладные, инвентаризации), финблок — iiko + банк + эквайринг + 1С. Реальная реализация: Yandex DataLens + Managed ClickHouse, ETL по расписанию, RLS по роли и точке, экспорт в Excel/PNG, drill-down по клику.</div>`;
+ tab.render(document.getElementById('body'));
+}
+
+// ================= OVERVIEW =================
+function ownerPanel(){
+ const rows=[
+  ['r','!','<b>Food Cost выше нормы</b> — сегодня <span class="hl">35,8%</span> при норме 32%. Точка 1 · Героев 5. Триггер — рост цен на сыр.'],
+  ['a','⚠','<b>Кассовый разрыв риск</b> 25–28 июля <span class="hl">−0,4 М</span>: аренда+аванс ЗП сошлись с оплатой поставщику.'],
+  ['a','⚠','<b>Списания превысили лимит</b> — <span class="hl">14 200 ₽</span>/день при лимите 11 000 ₽.'],
+  ['a','⚠','<b>Неликвид на складе</b> — «Соус терияки» 90+ дней, заморожено <span class="hl">18 000 ₽</span>.'],
+  ['g','✓','<b>Точка 2 · Косинское — рекорд</b> недели <span class="hl g">152 924 ₽</span> при марже 61%.'],
+ ];
+ return `<div class="opanel">`+rows.map(([s,i,m])=>`<div class="orow"><div class="sv ${s}">${i}</div><div class="om">${m}</div></div>`).join('')+`</div>`;
+}
+function renderOverview(el){
+ const sc=scale(), rn=rng(7);
+ const rev=Math.round(R(6.2,7.4,rn)*sc*1e6);
+ const gross=Math.round(rev*R(0.63,0.69,rn)), ebitda=Math.round(rev*R(0.15,0.20,rn)), net=Math.round(rev*R(0.09,0.14,rn));
+ const cash=Math.round(R(0.7,1.6,rn)*sc*1e6);
+ const fc=R(30,34,rn), lc=R(23,27,rn), prime=fc+lc, avg=Math.round(R(1500,2000,rn)), turn=Math.round(R(11,18,rn)), spis=R(2.2,3.8,rn), yoy=R(6,16,rn);
+ el.innerHTML=`<div class="grid k12">
+   ${kpi('Выручка · период',mln(rev),pct(yoy)+' YoY','up','₽')}
+   ${kpi('Валовая маржа',(gross/rev*100).toFixed(0)+'%','+0,7 п.п.','up','%')}
+   ${kpi('EBITDA-маржа',(ebitda/rev*100).toFixed(1)+'%','+0,6 п.п.','up','%')}
+   ${kpi('Чистая прибыль',mln(net),(net/rev*100).toFixed(1)+'% рент.','up','₽')}
+   ${kpi('Cash · все счета',mln(cash),'≈ '+Math.round(cash/(rev/30))+' дн OpEx','neu','💰')}
+   ${kpi('PRIME Cost',prime.toFixed(1)+'%','норма ≤60%',prime>60?'down':'up','⚖')}
+   ${kpi('Food Cost',fc.toFixed(1)+'%',fc>32?'выше нормы':'в норме',fc>32?'down':'up','%')}
+   ${kpi('Labor Cost (ФОТ)',lc.toFixed(1)+'%',lc>26?'выше цели':'в цели',lc>26?'down':'up','%')}
+   ${kpi('Средний чек',money(avg),'+3,1% к прошл.','up','₽')}
+   ${kpi('Оборачиваемость склада',turn+' дн','цель ≤14 дн',turn>14?'down':'up','📦')}
+   ${kpi('Списания',spis.toFixed(1)+'%','от выручки',spis>3?'down':'up','↘')}
+   ${kpi('Рост выручки YoY',pct(yoy),'опережает рынок','up','↗')}
+ </div>
+ <div class="grid cards">
+   ${card('c8','Выручка и EBITDA · 12 месяцев','iiko + банк + 1С',cb('o_trend'))}
+   ${card('c4','Что требует внимания собственника',' автоалёрты',ownerPanel())}
+   ${card('c4','Структура выручки (PRIME + прибыль)','iiko + банк',cb('o_prime','sm'))}
+   ${card('c4','P&L по точкам','iiko + банк + 1С',plByStore(rn,sc))}
+   ${card('c4','Unit-экономика по каналам','iiko: тип заказа',unitByChannel(rn,sc))}
+   ${card('c12','ДДС — приток / отток и остаток по неделям','iiko (касса) + банк',cb('o_cf'))}
+ </div>`;
+ mk('o_trend',{type:'bar',data:{labels:MO12,datasets:[
+   {label:'Выручка',data:series12(rn,rev,0.008),backgroundColor:'rgba(77,138,240,.85)',borderRadius:4},
+   {label:'EBITDA',data:series12(rn,ebitda,0.010),backgroundColor:'rgba(35,178,109,.9)',borderRadius:4}
+ ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>money0(v/1e6)+'М'}}}}});
+ mk('o_prime',{type:'doughnut',data:{labels:['Food Cost','Labor Cost','Аренда+прочее','Прибыль'],datasets:[{data:[Math.round(fc),Math.round(lc),Math.round(Math.max(4,100-fc-lc-net/rev*100)),Math.round(net/rev*100)],backgroundColor:[C.red,C.amber,C.purple,C.green],borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+ const weeks=['Нед 1','Нед 2','Нед 3','Нед 4','Нед 5','Нед 6'];let bal=Math.round(R(0.6,1,rn)*sc*1e6);const bs=[],inn=[],out=[];
+ weeks.forEach(()=>{const i=Math.round(R(1.4,2,rn)*sc*1e6);const o=Math.round(R(1.3,2.1,rn)*sc*1e6);inn.push(i);out.push(-o);bal+=i-o;bs.push(Math.round(bal));});
+ mk('o_cf',{type:'bar',data:{labels:weeks,datasets:[{label:'Притоки',data:inn,backgroundColor:C.green},{label:'Оттоки',data:out,backgroundColor:C.red},{label:'Остаток',type:'line',data:bs,borderColor:C.blue,tension:.3,pointRadius:3,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>money0(v/1e6)+'М'}}}}});
+}
+function plByStore(rn,sc){
+ const S=[['Точка 1 · Героев 5',0.62],['Точка 2 · Косинское 6',0.38]];
+ const rows=S.map(([n,w])=>{const rev=Math.round(R(6.2,7.4,rn)*sc*w*1e6);return {n,rev,eb:Math.round(rev*R(0.14,0.2,rn)),net:Math.round(rev*R(0.08,0.14,rn))};});
+ return `<table class="tbl"><thead><tr><th>Точка</th><th class="num">Выручка</th><th class="num">EBITDA</th><th class="num">Чистая</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.n}</td><td class="num">${mln(x.rev)}</td><td class="num">${mln(x.eb)}</td><td class="num" style="font-weight:700;color:${x.net>0?C.green:C.red}">${mln(x.net)}</td></tr>`).join('')}<tr style="font-weight:800"><td>Итого</td><td class="num">${mln(rows.reduce((s,x)=>s+x.rev,0))}</td><td class="num">${mln(rows.reduce((s,x)=>s+x.eb,0))}</td><td class="num">${mln(rows.reduce((s,x)=>s+x.net,0))}</td></tr></tbody></table>`;
+}
+function unitByChannel(rn,sc){
+ const ch=[['Розница (зал)',0.6],['B2B / корпоратив',0.25],['Предзаказы / доставка',0.15]];const tot=Math.round(R(6.2,7.4,rn)*sc*1e6);
+ const rows=ch.map(([n,w])=>({n,rev:Math.round(tot*w),mp:R(52,68,rn)}));
+ return `<table class="tbl"><thead><tr><th>Канал</th><th class="num">Выручка</th><th class="num">Доля</th><th class="num">Маржа</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.n}</td><td class="num">${mln(x.rev)}</td><td class="num">${(x.rev/tot*100).toFixed(0)}%</td><td class="num" style="color:${x.mp>60?C.green:C.ink}">${x.mp.toFixed(0)}%</td></tr>`).join('')}</tbody></table>`;
+}
+
+// ================= TODAY =================
+function renderToday(el){
+ const sc=scale(), rn=rng(101);
+ const rev=Math.round(R(210000,250000,rn)*sc), plan=Math.round(rev/R(0.95,1.06,rn)), yst=Math.round(rev/R(0.92,1.08,rn));
+ const checks=Math.round(R(430,560,rn)*sc), avg=Math.round(rev/checks), guests=Math.round(checks*R(1.4,1.9,rn));
+ const fc=R(29,37,rn), spis=Math.round(R(6000,15000,rn)*sc), items=(R(2.1,3.4,rn)), cashShare=Math.round(R(28,44,rn)), dRev=(rev/plan-1)*100, dYst=(rev/yst-1)*100;
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Выручка за день',money(rev),`vs план ${money0(plan)} · ${pct(dRev)}`,dRev>=0?'up':'down','₽')}
+   ${kpi('vs вчера',pct(dYst),`вчера ${money0(yst)}`,dYst>=0?'up':'down','↗')}
+   ${kpi('Чеки · средний чек',checks+' чек.',`средний ${money(avg)}`,'neu','🧾')}
+   ${kpi('Гостей',guests+' чел.',`комплексность ${items.toFixed(1)} поз./чек`,'neu','👤')}
+   ${kpi('Food Cost за день',fc.toFixed(1)+'%',fc>32?'выше нормы (32%)':'в норме',fc>32?'down':'up','%')}
+   ${kpi('Списания витрины',money(spis),'лимит '+money(11000),spis>11000?'down':'up','↘')}
+   ${kpi('Наличные / безнал',cashShare+'% / '+(100-cashShare)+'%','доля оплат','neu','💳')}
+   ${kpi('Выручка на гостя',money(Math.round(rev/guests)),'ARPU за день','neu','₽')}
+ </div>
+ <div class="grid cards">
+   ${card('c8','Выручка по часам сегодня (факт/план)','iiko: OLAP Продажи',cb('t_hours'))}
+   ${card('c4','Структура продаж за день','iiko: OLAP Продажи',cb('t_mix','sm'))}
+   ${card('c6','Оплаты: наличные / безнал / карта','iiko + эквайринг',cb('t_pay','sm'))}
+   ${card('c6','Выручка за последние 7 дней','iiko: OLAP Продажи',cb('t_7d','sm'))}
+ </div>`;
+ const hrs=['10','11','12','13','14','15','16','17','18','19','20','21'];
+ mk('t_hours',{type:'bar',data:{labels:hrs,datasets:[{label:'Факт',data:hrs.map(()=>Math.round(R(6,26,rn)*sc*1000)),backgroundColor:C.blue,borderRadius:4},{label:'План',type:'line',data:hrs.map(()=>Math.round(R(8,24,rn)*sc*1000)),borderColor:C.amber,backgroundColor:'transparent',tension:.35,pointRadius:0,borderWidth:2}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{callback:v=>money0(v)}}},plugins:{legend:{position:'bottom'}}}});
+ mk('t_mix',{type:'doughnut',data:{labels:CATS.slice(0,6),datasets:[{data:CATS.slice(0,6).map(()=>Math.round(R(8,30,rn))),backgroundColor:[C.blue,C.green,C.amber,C.purple,C.teal,C.red],borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{size:11}}}}}});
+ mk('t_pay',{type:'doughnut',data:{labels:['Наличные','Безнал (счёт)','Карта/эквайринг'],datasets:[{data:[cashShare,Math.round((100-cashShare)*0.3),Math.round((100-cashShare)*0.7)],backgroundColor:[C.teal,C.purple,C.blue],borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom'}}}});
+ const d7=days(7).map(fmtD);
+ mk('t_7d',{type:'bar',data:{labels:d7,datasets:[{label:'Выручка',data:d7.map(()=>Math.round(R(160,250,rn)*sc*1000)),backgroundColor:C.blue,borderRadius:4}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>money0(v)}}}}});
+}
+
+// ================= SALES =================
+function renderSales(el){
+ const sc=scale(),rn=rng(202),n=periodDays(),dd=days(n),lab=dd.map(fmtD);
+ const rev=Math.round(R(5.6,7.2,rn)*sc*1e6),checks=Math.round(R(12,17,rn)*sc*1000),avg=Math.round(rev/checks);
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Выручка за период',mln(rev),'+7,9% WoW','up','₽')}
+   ${kpi('Чеков',money0(checks),'+4,1% WoW','up','🧾')}
+   ${kpi('Средний чек',money(avg),'+3,1% WoW','up','₽')}
+   ${kpi('Выручка в час',money(Math.round(rev/(n*11))),'загрузка зала','neu','⏱')}
+   ${kpi('Гостей',money0(Math.round(checks*1.6)),'трафик','neu','👤')}
+   ${kpi('Конверсия предзаказов',(R(18,32,rn)).toFixed(0)+'%','из брони в чек','neu','↗')}
+   ${kpi('Доля доставки',(R(12,22,rn)).toFixed(0)+'%','в выручке','neu','🛵')}
+   ${kpi('Возвраты/отмены',(R(0.4,1.6,rn)).toFixed(1)+'%','от выручки','warn','↩')}
+ </div>
+ <div class="grid cards">
+   ${card('c8','Выручка по дням: текущий vs прошлый период','iiko: OLAP Продажи',cb('s_days'))}
+   ${card('c4','Средний чек по дням','iiko: OLAP Продажи',cb('s_avg','sm'))}
+   ${card('c6','Выручка по дням недели','iiko: OLAP Продажи',cb('s_dow'))}
+   ${card('c6','Выручка по часам (профиль недели)','iiko: OLAP Продажи',cb('s_hours'))}
+   ${card('c12','Топ и антитоп позиций','iiko: OLAP Продажи',topTable(rn,sc))}
+ </div>`;
+ mk('s_days',{type:'line',data:{labels:lab,datasets:[{label:'Текущий период',data:dd.map(()=>Math.round(R(150,340,rn)*sc*1000)),borderColor:C.blue,backgroundColor:'rgba(77,138,240,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2},{label:'Прошлый период',data:dd.map(()=>Math.round(R(140,320,rn)*sc*1000)),borderColor:C.mut,borderDash:[5,4],tension:.35,pointRadius:0,borderWidth:2}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{callback:v=>money0(v)}}},plugins:{legend:{position:'bottom'}}}});
+ mk('s_avg',{type:'line',data:{labels:lab,datasets:[{label:'Средний чек',data:dd.map(()=>Math.round(R(1500,2100,rn))),borderColor:C.green,backgroundColor:'rgba(35,178,109,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>money0(v)}}}}});
+ const dow=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+ mk('s_dow',{type:'bar',data:{labels:dow,datasets:[{label:'Средняя выручка дня',data:dow.map((d,i)=>Math.round((i>=4?R(240,320,rn):R(150,220,rn))*sc*1000)),backgroundColor:dow.map((d,i)=>i>=4?C.blue:C.soft),borderColor:C.blue,borderWidth:dow.map((d,i)=>i>=4?0:1),borderRadius:4}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>money0(v)}}}}});
+ const hrs=['10','11','12','13','14','15','16','17','18','19','20','21'];
+ mk('s_hours',{type:'bar',data:{labels:hrs,datasets:[{label:'Средняя выручка часа',data:hrs.map(h=>Math.round((+h>=12&&+h<=14||+h>=18&&+h<=20?R(18,28,rn):R(6,15,rn))*sc*1000)),backgroundColor:hrs.map(h=>(+h>=12&&+h<=14||+h>=18&&+h<=20)?C.blue:C.soft),borderRadius:4}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>money0(v)}}}}});
+}
+function topTable(rn,sc){
+ const dishes=['Пицца Пепперони','Сет «Филадельфия»','Ролл Калифорния','Пицца Маргарита','Цезарь с курицей','Том Ям','Пицца 4 сыра','Тирамису','Комбо-обед','Круассан'];
+ const rows=dishes.map(d=>({d,q:Math.round(R(10,180,rn)*sc),s:Math.round(R(6,120,rn)*sc*1000)})).sort((a,b)=>b.s-a.s);
+ const top=rows.slice(0,4),bot=rows.slice(-3);
+ const r=(x,cls)=>`<tr><td>${x.d}</td><td class="num">${x.q}</td><td class="num">${money0(x.s)}</td><td><span class="pill ${cls}">${cls==='pA'?'топ':'антитоп'}</span></td></tr>`;
+ return `<table class="tbl"><thead><tr><th>Позиция</th><th class="num">Продано</th><th class="num">Выручка</th><th></th></tr></thead><tbody>${top.map(x=>r(x,'pA')).join('')}${bot.map(x=>r(x,'pC')).join('')}</tbody></table>`;
+}
+
+// ================= COST =================
+function renderCost(el){
+ const sc=scale(),rn=rng(303),n=periodDays(),dd=days(n),lab=dd.map(fmtD);
+ const rev=Math.round(R(5.6,7.2,rn)*sc*1e6),fc=R(30,35,rn),cogs=Math.round(rev*fc/100),spisSum=Math.round(rev*R(0.022,0.038,rn));
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Food Cost средний',fc.toFixed(1)+'%',fc>32?'выше нормы':'в норме',fc>32?'down':'up','%')}
+   ${kpi('Себестоимость проданного',mln(cogs),'COGS за период','neu','₽')}
+   ${kpi('Средняя наценка',(100/(fc/100)-100).toFixed(0)+'%','по меню','up','%')}
+   ${kpi('Списания',money0(spisSum)+' ₽',(spisSum/rev*100).toFixed(1)+'% от выручки',spisSum/rev>0.03?'down':'up','↘')}
+ </div>
+ <div class="grid cards">
+   ${card('c8','Food Cost % по дням (норма 32%)','iiko: OLAP Себестоимость',cb('c_fc'))}
+   ${card('c4','Списания за период по причинам','iiko: OLAP Склад',cb('c_pie','sm'))}
+   ${card('c7','Списания по дням: брак / остатки витрины / просрочка','iiko: OLAP Склад',cb('c_stack'))}
+   ${card('c5','Перепроизводство — напекли и не продали','iiko: Склад + Продажи',cb('c_over'))}
+   ${card('c12','Food Cost по категориям меню','iiko: техкарты + продажи',cb('c_cat'))}
+ </div>`;
+ mk('c_fc',{type:'line',data:{labels:lab,datasets:[{label:'Food Cost %',data:dd.map(()=>+R(28,37,rn).toFixed(1)),borderColor:C.red,backgroundColor:'rgba(224,87,74,.10)',fill:true,tension:.35,pointRadius:0,borderWidth:2},{label:'Норма 32%',data:dd.map(()=>32),borderColor:C.mut,borderDash:[6,4],pointRadius:0,borderWidth:1.5}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+ mk('c_pie',{type:'doughnut',data:{labels:['Брак','Остатки витрины','Просрочка'],datasets:[{data:[Math.round(R(20,40,rn)),Math.round(R(30,55,rn)),Math.round(R(10,25,rn))],backgroundColor:[C.red,C.amber,C.purple],borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom'}}}});
+ mk('c_stack',{type:'bar',data:{labels:lab,datasets:[{label:'Брак',data:dd.map(()=>Math.round(R(1,4,rn)*sc*1000)),backgroundColor:C.red},{label:'Остатки витрины',data:dd.map(()=>Math.round(R(2,6,rn)*sc*1000)),backgroundColor:C.amber},{label:'Просрочка',data:dd.map(()=>Math.round(R(0,3,rn)*sc*1000)),backgroundColor:C.purple}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>money0(v)}}}}});
+ const it=['Хлеб/тесто','Выпечка','Салаты гот.','Горячее гот.','Десерты'];
+ mk('c_over',{type:'bar',data:{labels:it,datasets:[{label:'Произведено',data:it.map(()=>Math.round(R(30,120,rn)*sc)),backgroundColor:C.soft,borderColor:C.blue,borderWidth:1},{label:'Продано',data:it.map(()=>Math.round(R(20,90,rn)*sc)),backgroundColor:C.blue}]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+ mk('c_cat',{type:'bar',data:{labels:CATS,datasets:[{label:'Food Cost %',data:CATS.map(()=>+R(24,42,rn).toFixed(1)),backgroundColor:CATS.map(()=>C.blue),borderRadius:4},{label:'Норма',type:'line',data:CATS.map(()=>32),borderColor:C.red,borderDash:[6,4],pointRadius:0,borderWidth:1.5}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+}
+
+// ================= STAFF =================
+function renderStaff(el){
+ const sc=scale(),rn=rng(404),n=periodDays(),dd=days(n),lab=dd.map(fmtD);const fot=R(22,30,rn);
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('ФОТ % от выручки',fot.toFixed(1)+'%',fot>26?'выше цели (26%)':'в цели',fot>26?'down':'up','%')}
+   ${kpi('Выработка на смену',money(Math.round(R(55,80,rn)*1000)),'выручка / смену','neu','⚙')}
+   ${kpi('Выручка на чел-час (SPLH)',money(Math.round(R(1.8,3.2,rn)*1000)),'производительность','up','⏱')}
+   ${kpi('Средняя ставка',money(Math.round(R(230,340,rn)))+'/ч','по персоналу','neu','₽')}
+   ${kpi('Плановые часы',Math.round(R(280,360,rn)*sc)+' ч','за период','neu','🕒')}
+   ${kpi('Факт часы',Math.round(R(290,380,rn)*sc)+' ч','переработки '+Math.round(R(2,9,rn))+'%','warn','🕒')}
+   ${kpi('Смен за период',Math.round(R(40,70,rn)*sc),'закрыто','neu','📅')}
+   ${kpi('Опоздания',Math.round(R(2,9,rn))+' случ.','дисциплина','warn','⚠')}
+ </div>
+ <div class="grid cards">
+   ${card('c6','Плановые vs фактические часы по дням','iiko: Кассовые смены / График',cb('st_hours'))}
+   ${card('c3','Выручка по сменам','iiko: OLAP Продажи',cb('st_shift','sm'))}
+   ${card('c3','ФОТ % по дням','iiko + расчёт ЗП',cb('st_fot','sm'))}
+   ${card('c6','Labor Cost % vs выручка по неделям','iiko + расчёт ЗП',cb('st_lc'))}
+   ${card('c6','Выработка на человека (топ смен)','iiko: Продажи / смены',prodTable(rn,sc))}
+ </div>`;
+ mk('st_hours',{type:'bar',data:{labels:lab,datasets:[{label:'План, ч',data:dd.map(()=>Math.round(R(9,14,rn)*sc*3)),backgroundColor:C.soft,borderColor:C.blue,borderWidth:1},{label:'Факт, ч',data:dd.map(()=>Math.round(R(9,15,rn)*sc*3)),backgroundColor:C.blue}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+ mk('st_shift',{type:'doughnut',data:{labels:['Утро','День','Вечер'],datasets:[{data:[Math.round(R(15,25,rn)),Math.round(R(35,45,rn)),Math.round(R(35,50,rn))],backgroundColor:[C.teal,C.blue,C.purple],borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom'}}}});
+ mk('st_fot',{type:'line',data:{labels:lab,datasets:[{label:'ФОТ %',data:dd.map(()=>+R(22,31,rn).toFixed(1)),borderColor:C.amber,backgroundColor:'rgba(245,166,35,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+ const wk=['Нед 1','Нед 2','Нед 3','Нед 4'];
+ mk('st_lc',{type:'bar',data:{labels:wk,datasets:[{label:'Выручка',data:wk.map(()=>Math.round(R(1.3,1.9,rn)*sc*1e6)),backgroundColor:'rgba(77,138,240,.35)',borderRadius:4,yAxisID:'y'},{label:'Labor Cost %',type:'line',data:wk.map(()=>+R(22,29,rn).toFixed(1)),borderColor:C.amber,tension:.3,pointRadius:3,borderWidth:2,yAxisID:'y1'}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{position:'left',ticks:{callback:v=>money0(v/1e6)+'М'}},y1:{position:'right',grid:{display:false},ticks:{callback:v=>v+'%'}}}}});
+}
+function prodTable(rn,sc){
+ const nm=['Смена · Пн утро','Смена · Пт вечер','Смена · Сб день','Смена · Вс вечер','Смена · Ср день'];
+ const rows=nm.map(n=>({n,ppl:Math.round(R(3,7,rn)),rev:Math.round(R(45,95,rn)*sc*1000)})).map(x=>({...x,per:Math.round(x.rev/x.ppl)})).sort((a,b)=>b.per-a.per);
+ return `<table class="tbl"><thead><tr><th>Смена</th><th class="num">Чел.</th><th class="num">Выручка</th><th class="num">На человека</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.n}</td><td class="num">${x.ppl}</td><td class="num">${money0(x.rev)}</td><td class="num"><b>${money0(x.per)}</b></td></tr>`).join('')}</tbody></table>`;
+}
+
+// ================= STOCK =================
+function renderStock(el){
+ const rn=rng(505),sc=scale();
+ const stockVal=Math.round(R(0.8,1.6,rn)*sc*1e6),turn=Math.round(R(11,18,rn)),neliq=Math.round(R(30,80,rn)*1000);
+ const low=['Моцарелла, кг','Мука в/с, кг','Лосось с/с, кг','Тесто пицца, шт','Кола 0.5, шт','Салфетки, уп'].map(n=>({n,q:+R(0.2,4,rn).toFixed(1),days:+R(0.3,1.6,rn).toFixed(1)}));
+ const over=['Соус терияки, кг','Рис для суши, кг','Кофе зерно, кг','Сироп карамель, л','Упаковка XL, шт'].map(n=>({n,q:Math.round(R(20,90,rn)),days:Math.round(R(35,120,rn))}));
+ const exp=['Сливки 33%, 3 л','Творожный сыр, 4 кг','Салат микс, 2 кг','Форель, 1.5 кг'].map(n=>({n,d:Math.round(R(1,4,rn))}));
+ const rl=low.map(x=>`<tr><td>${x.n}</td><td class="num">${x.q}</td><td class="num" style="color:${C.red};font-weight:700">${x.days} дн.</td></tr>`).join('');
+ const ro=over.map(x=>`<tr><td>${x.n}</td><td class="num">${x.q}</td><td class="num" style="color:${C.amber};font-weight:700">${x.days} дн.</td></tr>`).join('');
+ const re=exp.map(x=>`<tr><td>${x.n}</td><td class="num" style="color:${x.d<=2?C.red:C.amber};font-weight:700">${x.d} дн.</td></tr>`).join('');
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Стоимость склада',mln(stockVal),'заморожено в запасах','neu','📦')}
+   ${kpi('Оборачиваемость',turn+' дн','цель ≤14 дн',turn>14?'down':'up','🔄')}
+   ${kpi('Неликвид',money0(neliq)+' ₽','90+ дней без движения','down','↘')}
+   ${kpi('Стоп-лист',5+' поз.','нет в продаже сейчас','warn','⛔')}
+ </div>
+ <div class="grid cards">
+   ${card('c6','🔴 Заканчивается — пора заказывать','iiko: Остатки на складе',`<table class="tbl"><thead><tr><th>Позиция</th><th class="num">Остаток</th><th class="num">Хватит на</th></tr></thead><tbody>${rl}</tbody></table>`)}
+   ${card('c6','🟠 Затоварено — лежит и портится','iiko: Остатки + Оборачиваемость',`<table class="tbl"><thead><tr><th>Позиция</th><th class="num">Остаток</th><th class="num">Оборачивается</th></tr></thead><tbody>${ro}</tbody></table>`)}
+   ${card('c6','⛔ Стоп-лист сейчас','iiko: Стоп-лист',`<div class="stopchips"><span class="s">Ролл Дракон</span><span class="s">Пицца Трюфельная</span><span class="s">Устрицы</span><span class="s">Тартар</span><span class="s">Раф кокосовый</span></div><div class="mini">Дольше всех «Устрицы» — 6 дней</div>`)}
+   ${card('c6','⏳ Ближайшие сроки годности','iiko: Партии/сроки',`<table class="tbl"><thead><tr><th>Позиция</th><th class="num">Годен ещё</th></tr></thead><tbody>${re}</tbody></table>`)}
+   ${card('c12','Оборачиваемость по категориям (дни)','iiko: Склад',cb('sk_turn'))}
+ </div>`;
+ mk('sk_turn',{type:'bar',data:{labels:CATS,datasets:[{label:'Оборачиваемость, дн',data:CATS.map(()=>Math.round(R(6,60,rn))),backgroundColor:CATS.map(()=>C.blue),borderRadius:4},{label:'Цель 14 дн',type:'line',data:CATS.map(()=>14),borderColor:C.red,borderDash:[6,4],pointRadius:0,borderWidth:1.5}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+}
+
+// ================= ALERTS =================
+function renderAlerts(el){
+ const A=[
+  {s:'red',b:'Food Cost выше нормы',m:'Сегодня 35.8% при норме 32%. Точка 1 · Героев 5.',t:'2 часа назад'},
+  {s:'red',b:'Списания превысили лимит',m:'14 200 ₽ за день при лимите 11 000 ₽. Основное — остатки витрины.',t:'сегодня'},
+  {s:'amber',b:'Позиция долго в стоп-листе',m:'«Устрицы» в стоп-листе 6 дней — проверьте закупку или уберите из меню.',t:'сегодня'},
+  {s:'amber',b:'Инкассация / касса не сходится',m:'Расхождение 3 400 ₽ между эквайрингом и продажами. Точка 2 · Косинское 6.',t:'вчера'},
+  {s:'blue',b:'Выручка ниже плана N дней подряд',m:'3 дня подряд факт ниже плана на 6–9%. Точка 2 · Косинское 6.',t:'период'},
+  {s:'amber',b:'Оборачиваемость: неликвид',m:'«Соус терияки» не движется 90+ дней — заморожено ~18 000 ₽.',t:'период'},
+ ];
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Открыто алертов',A.length,'требуют внимания','neu','🔔')}
+   ${kpi('Критичных',A.filter(a=>a.s==='red').length,'красный уровень','down','!')}
+   ${kpi('Решено за 7 дней',9,'закрыто','up','✓')}
+   ${kpi('Ср. время закрытия',(R(0.5,2.5,rn=rng(1))).toFixed(1)+' дн','реакция','neu','⏱')}
+ </div>
+ <div style="max-width:840px">`+A.map(a=>`<div class="alert"><div class="dot sev-${a.s}"></div><div class="m"><b>${a.b}</b><br>${a.m}<br><span>${a.t}</span></div></div>`).join('')+
+  `<div class="bar-hint">Правила настраиваются: пороги (норма Food Cost, лимит списаний, дней ниже плана), адресаты (Telegram-бот), период проверки.</div></div>`;
+}
+
+// ================= SKU =================
+function renderSKU(el){
+ const sc=scale(),rn=rng(606);
+ const dishes=['Пицца Пепперони','Сет Филадельфия','Ролл Калифорния','Пицца Маргарита','Цезарь','Том Ям','Пицца 4 сыра','Тирамису','Комбо-обед','Круассан','Латте','Пицца Трюфельная'];
+ const rows=dishes.map(d=>{const q=Math.round(R(15,220,rn)*sc);const price=Math.round(R(180,750,rn));const rev=q*price;const cost=Math.round(rev*R(0.24,0.42,rn));const mg=rev-cost;return {d,q,rev,cost,mg,mp:mg/rev*100};}).sort((a,b)=>b.mg-a.mg);
+ const tot=rows.reduce((s,x)=>s+x.rev,0);let cum=0;rows.forEach(x=>{cum+=x.rev;x.abc=cum/tot<=0.8?'A':cum/tot<=0.95?'B':'C';});
+ const aShare=rows.filter(x=>x.abc==='A').length/rows.length*100, avgMp=rows.reduce((s,x)=>s+x.mp,0)/rows.length, stars=rows.filter(x=>x.mp>55&&x.q>90).length;
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Позиций в меню',dishes.length+' SKU','активных','neu','🍽')}
+   ${kpi('Доля A-класса',aShare.toFixed(0)+'%','дают 80% выручки','up','🅰')}
+   ${kpi('Средняя маржа',avgMp.toFixed(0)+'%','по меню','up','%')}
+   ${kpi('«Звёзды» меню',stars+' поз.','высокая маржа × спрос','up','⭐')}
+ </div>
+ <div class="grid cards">
+   ${card('c7','Рентабельность по каждой SKU','iiko: OLAP Продажи + техкарты',
+     `<table class="tbl"><thead><tr><th>Позиция</th><th class="num">Прод.</th><th class="num">Выручка</th><th class="num">Себест.</th><th class="num">Маржа ₽</th><th class="num">Маржа %</th><th>ABC</th></tr></thead><tbody>${rows.slice(0,10).map(x=>`<tr><td>${x.d}</td><td class="num">${x.q}</td><td class="num">${money0(x.rev)}</td><td class="num">${money0(x.cost)}</td><td class="num"><b>${money0(x.mg)}</b></td><td class="num" style="color:${x.mp>60?C.green:x.mp>45?C.ink:C.red}">${x.mp.toFixed(0)}%</td><td><span class="pill p${x.abc}">${x.abc}</span></td></tr>`).join('')}</tbody></table>
+     <div class="bar-hint">Клик по строке → карточка блюда: динамика маржи, состав себестоимости, продажи по дням.</div>`)}
+   ${card('c5','Матрица «маржинальность × спрос»','iiko: Продажи + техкарты',cb('sku_bub'))}
+ </div>`;
+ mk('sku_bub',{type:'bubble',data:{datasets:[{label:'Блюда',data:rows.map(x=>({x:x.q,y:+x.mp.toFixed(1),r:Math.max(5,Math.sqrt(x.mg)/28)})),backgroundColor:rows.map(x=>x.mp>55&&x.q>90?'rgba(35,178,109,.6)':x.mp<40?'rgba(224,87,74,.55)':'rgba(77,138,240,.5)')}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`спрос ${c.raw.x} · маржа ${c.raw.y}%`}}},scales:{x:{title:{display:true,text:'Спрос, шт'}},y:{title:{display:true,text:'Маржа, %'},ticks:{callback:v=>v+'%'}}}}});
+}
+
+// ================= PRICE =================
+function renderPrice(el){
+ const rn=rng(707),n=periodDays(),dd=days(Math.min(n,30)),lab=dd.map(fmtD);
+ const items=[['Моцарелла, кг',560],['Мука в/с, кг',48],['Лосось с/с, кг',1450],['Сыр творожный, кг',720],['Томаты, кг',260],['Кофе зерно, кг',2100],['Куриное филе, кг',390],['Масло раст., л',180]];
+ const rows=items.map(([n0,base])=>{const prev=Math.round(base*R(0.9,1.02,rn));const cur=Math.round(base*R(0.98,1.16,rn));return {n:n0,prev,cur,d:(cur/prev-1)*100};});
+ const up=rows.filter(x=>x.d>0).length, avgUp=rows.reduce((s,x)=>s+x.d,0)/rows.length;
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Позиций подорожало',up+' из '+rows.length,'за поставку','down','↗')}
+   ${kpi('Средний рост цены',pct(avgUp),'по корзине','down','%')}
+   ${kpi('Инфляция закупки',pct(R(1.5,4.5,rn))+'/мес','темп','down','📈')}
+   ${kpi('Топ подорожавшая',rows.slice().sort((a,b)=>b.d-a.d)[0].n.split(',')[0],pct(rows.slice().sort((a,b)=>b.d-a.d)[0].d),'down','🏷')}
+ </div>
+ <div class="grid cards">
+   ${card('c6','Изменение входящей цены vs прошлая поставка','iiko: Приходные накладные',
+     `<table class="tbl"><thead><tr><th>Товар</th><th class="num">Цена пред.</th><th class="num">Цена тек.</th><th class="num">Δ</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.n}</td><td class="num">${money0(x.prev)}</td><td class="num"><b>${money0(x.cur)}</b></td><td class="num" style="color:${x.d>0?C.red:C.green};font-weight:700">${pct(x.d)}</td></tr>`).join('')}</tbody></table>
+     <div class="bar-hint">Подсветка отклонений > 5%. Клик → история цены и поставщиков по позиции.</div>`)}
+   ${card('c6','Динамика закупочной цены (топ-позиции)','iiko: Приходные накладные',cb('pr_line'))}
+   ${card('c7','Влияние роста цен на фудкост блюд','iiko: накладные + техкарты',cb('pr_bar'))}
+   ${card('c5','Индекс закупочных цен · 12 месяцев','iiko: накладные',cb('pr_idx'))}
+ </div>`;
+ mk('pr_line',{type:'line',data:{labels:lab,datasets:[{label:'Моцарелла',data:dd.map((_,i)=>Math.round(560*(1+i*0.004+R(-0.01,0.01,rn)))),borderColor:C.blue,tension:.3,pointRadius:0,borderWidth:2},{label:'Лосось',data:dd.map((_,i)=>Math.round(1450*(1+i*0.006+R(-0.01,0.01,rn)))),borderColor:C.red,tension:.3,pointRadius:0,borderWidth:2},{label:'Кофе',data:dd.map((_,i)=>Math.round(2100*(1+i*0.003+R(-0.008,0.008,rn)))),borderColor:C.purple,tension:.3,pointRadius:0,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>money0(v)}}}}});
+ const dn=['Пицца 4 сыра','Сет Филадельфия','Цезарь','Латте','Круассан'];
+ mk('pr_bar',{type:'bar',data:{labels:dn,datasets:[{label:'Фудкост было, %',data:dn.map(()=>+R(28,34,rn).toFixed(1)),backgroundColor:C.soft,borderColor:C.blue,borderWidth:1},{label:'Фудкост стало, %',data:dn.map(()=>+R(31,39,rn).toFixed(1)),backgroundColor:C.red}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+ let idx=100;const idxS=MO12.map(()=>{idx=idx*(1+R(0.005,0.035,rn));return +idx.toFixed(1);});
+ mk('pr_idx',{type:'line',data:{labels:MO12,datasets:[{label:'Индекс цен (база 100)',data:idxS,borderColor:C.amber,backgroundColor:'rgba(245,166,35,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+}
+
+// ================= P&L (12 месяцев) =================
+function renderPL(el){
+ const sc=scale(),rn=rng(808);
+ const revS=series12(rn,7e6*sc,0.008);
+ const cogsS=revS.map(x=>Math.round(x*R(0.31,0.35,rn)));
+ const grossS=revS.map((x,i)=>x-cogsS[i]);
+ const fotS=revS.map(x=>Math.round(x*R(0.24,0.28,rn)));
+ const rentS=revS.map(()=>Math.round(450000*sc));
+ const otherS=revS.map(x=>Math.round(x*R(0.10,0.14,rn)));
+ const ebitdaS=grossS.map((g,i)=>g-fotS[i]-rentS[i]-otherS[i]);
+ const taxS=ebitdaS.map(x=>Math.round(Math.max(0,x)*0.06));
+ const netS=ebitdaS.map((e,i)=>e-taxS[i]);
+ const L=x=>x[11], P=x=>x[10], Y=x=>x[0];
+ const rev=L(revS);
+ const line=(n,arr,neg,bold)=>{const cur=L(arr)*(neg?-1:1),pm=P(arr)*(neg?-1:1),ya=Y(arr)*(neg?-1:1);
+   return `<tr${bold?' style="font-weight:800;background:#f7f9fc"':''}><td>${n}</td><td class="num">${money0(cur)}</td><td class="num" style="color:${C.mut}">${money0(pm)}</td>${dcell(L(arr),P(arr))}<td class="num" style="color:${C.mut}">${money0(ya)}</td>${dcell(L(arr),Y(arr))}<td class="num">${(L(arr)/rev*100).toFixed(1)}%</td></tr>`;};
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(6,1fr)">
+   ${kpi('Выручка · июль',mln(rev),pct((L(revS)/Y(revS)-1)*100)+' YoY','up','₽')}
+   ${kpi('Валовая маржа',(L(grossS)/rev*100).toFixed(0)+'%','+'+((L(grossS)/rev-Y(grossS)/Y(revS))*100).toFixed(1)+' п.п. YoY','up','%')}
+   ${kpi('EBITDA-маржа',(L(ebitdaS)/rev*100).toFixed(1)+'%',pct((L(ebitdaS)/P(ebitdaS)-1)*100)+' MoM',L(ebitdaS)>=P(ebitdaS)?'up':'down','⚖')}
+   ${kpi('Чистая прибыль',mln(L(netS)),(L(netS)/rev*100).toFixed(1)+'% рент.',L(netS)>=P(netS)?'up':'down','₽')}
+   ${kpi('Рост выручки MoM',pct((L(revS)/P(revS)-1)*100),'к прошлому мес.',L(revS)>=P(revS)?'up':'down','↗')}
+   ${kpi('Себестоимость',(L(cogsS)/rev*100).toFixed(1)+'%','Food Cost','neu','%')}
+ </div>
+ <div class="grid cards">
+   ${card('c12','Динамика P&L · 12 месяцев','iiko + банк + 1С',cb('pl_trend','lg'))}
+   ${card('c8','ОПиУ · факт / динамика MoM и YoY','iiko + банк + 1С',
+    `<table class="tbl"><thead><tr><th>Статья</th><th class="num">Июль</th><th class="num">Июнь</th><th class="num">Δ MoM</th><th class="num">Год назад</th><th class="num">Δ YoY</th><th class="num">% выр.</th></tr></thead><tbody>
+     ${line('Выручка',revS,false,1)}${line('Себестоимость (COGS)',cogsS,true)}${line('Валовая прибыль',grossS,false,1)}
+     ${line('ФОТ',fotS,true)}${line('Аренда',rentS,true)}${line('Прочие операц.',otherS,true)}
+     ${line('EBITDA',ebitdaS,false,1)}${line('Налог (УСН 6%)',taxS,true)}${line('Чистая прибыль',netS,false,1)}
+    </tbody></table>`)}
+   ${card('c4','Динамика маржи · 12 мес','iiko + банк',cb('pl_marg','lg'))}
+ </div>`;
+ mk('pl_trend',{type:'bar',data:{labels:MO12,datasets:[
+   {label:'Выручка',data:revS,backgroundColor:'rgba(77,138,240,.75)',borderRadius:4,order:3},
+   {label:'EBITDA',type:'line',data:ebitdaS,borderColor:C.amber,tension:.3,pointRadius:2,borderWidth:2,order:1},
+   {label:'Чистая прибыль',type:'line',data:netS,borderColor:C.green,tension:.3,pointRadius:2,borderWidth:2,order:1}
+ ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>money0(v/1e6)+'М'}}}}});
+ mk('pl_marg',{type:'line',data:{labels:MO12,datasets:[
+   {label:'Валовая %',data:grossS.map((g,i)=>+(g/revS[i]*100).toFixed(1)),borderColor:C.blue,tension:.3,pointRadius:0,borderWidth:2},
+   {label:'EBITDA %',data:ebitdaS.map((e,i)=>+(e/revS[i]*100).toFixed(1)),borderColor:C.amber,tension:.3,pointRadius:0,borderWidth:2},
+   {label:'Чистая %',data:netS.map((nt,i)=>+(nt/revS[i]*100).toFixed(1)),borderColor:C.green,tension:.3,pointRadius:0,borderWidth:2}
+ ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+}
+
+// ================= BALANCE (12 месяцев) =================
+function renderBalance(el){
+ const sc=scale(),rn=rng(909);
+ const cashS=series12(rn,1.0e6*sc,0.010), stockS=series12(rn,1.2e6*sc,0.006), recvS=series12(rn,0.25e6*sc,0.004), fixedS=series12(rn,2.2e6*sc,0.003);
+ const curS=cashS.map((c,i)=>c+stockS[i]+recvS[i]);
+ const assetsS=curS.map((c,i)=>c+fixedS[i]);
+ const payS=series12(rn,0.8e6*sc,0.005), loanS=series12(rn,0.9e6*sc,-0.01);
+ const equityS=assetsS.map((a,i)=>a-payS[i]-loanS[i]);
+ const netDebtS=loanS.map((l,i)=>l-cashS[i]);
+ const L=x=>x[11],P=x=>x[10],Y=x=>x[0];
+ const liq=(L(curS)/(L(payS)+L(loanS))); const quick=((L(cashS)+L(recvS))/(L(payS)+L(loanS)));
+ const line=(n,arr,bold)=>`<tr${bold?' style="font-weight:800;background:#f7f9fc"':''}><td>${n}</td><td class="num">${money0(L(arr))}</td><td class="num" style="color:${C.mut}">${money0(P(arr))}</td>${dcell(L(arr),P(arr))}<td class="num" style="color:${C.mut}">${money0(Y(arr))}</td>${dcell(L(arr),Y(arr))}</tr>`;
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Активы',mln(L(assetsS)),pct((L(assetsS)/Y(assetsS)-1)*100)+' YoY','up','⚖')}
+   ${kpi('Собственный капитал',mln(L(equityS)),pct((L(equityS)/Y(equityS)-1)*100)+' YoY','up','₽')}
+   ${kpi('Чистый долг',mln(L(netDebtS)),L(netDebtS)<Y(netDebtS)?'снижается':'растёт',L(netDebtS)<Y(netDebtS)?'up':'down','💳')}
+   ${kpi('Текущая ликвидность',liq.toFixed(2)+'×',liq>1.5?'здорово (>1,5)':'следить',liq>1.5?'up':'warn','💧')}
+ </div>
+ <div class="grid cards">
+   ${card('c12','Динамика баланса · 12 месяцев','iiko + банк + 1С',cb('bal_trend','lg'))}
+   ${card('c8','Баланс · факт / динамика MoM и YoY','iiko + банк + 1С',
+    `<table class="tbl"><thead><tr><th>Статья</th><th class="num">Июль</th><th class="num">Июнь</th><th class="num">Δ MoM</th><th class="num">Год назад</th><th class="num">Δ YoY</th></tr></thead><tbody>
+     <tr style="font-weight:800"><td colspan="6">АКТИВЫ</td></tr>
+     ${line('Деньги (счета/касса)',cashS)}${line('Запасы (склад)',stockS)}${line('Дебиторка',recvS)}${line('Оборотные активы',curS,1)}
+     ${line('Внеоборотные (оборудование)',fixedS)}${line('ИТОГО активы',assetsS,1)}
+     <tr style="font-weight:800"><td colspan="6">ПАССИВЫ</td></tr>
+     ${line('Собственный капитал',equityS,1)}${line('Кредиты/займы',loanS)}${line('Долг поставщикам',payS)}${line('Чистый долг',netDebtS,1)}
+    </tbody></table>`)}
+   ${card('c4','Коэффициенты','iiko + банк + 1С',
+    `<table class="tbl"><tbody>
+     <tr><td>Текущая ликвидность</td><td class="num" style="font-weight:700;color:${liq>1.5?C.green:C.amber}">${liq.toFixed(2)}×</td></tr>
+     <tr><td>Быстрая ликвидность</td><td class="num" style="font-weight:700">${quick.toFixed(2)}×</td></tr>
+     <tr><td>Долг / Капитал</td><td class="num" style="font-weight:700">${((L(loanS)+L(payS))/L(equityS)).toFixed(2)}</td></tr>
+     <tr><td>Рабочий капитал</td><td class="num" style="font-weight:700">${mln(L(curS)-L(payS)-L(loanS))}</td></tr>
+     <tr><td>Оборачиваемость запасов</td><td class="num" style="font-weight:700">${Math.round(R(11,18,rn))} дн</td></tr>
+     <tr><td>Доля собств. капитала</td><td class="num" style="font-weight:700">${(L(equityS)/L(assetsS)*100).toFixed(0)}%</td></tr>
+    </tbody></table>`)}
+ </div>`;
+ mk('bal_trend',{type:'line',data:{labels:MO12,datasets:[
+   {label:'Активы',data:assetsS,borderColor:C.blue,backgroundColor:'rgba(77,138,240,.10)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+   {label:'Собственный капитал',data:equityS,borderColor:C.green,tension:.3,pointRadius:0,borderWidth:2},
+   {label:'Чистый долг',data:netDebtS,borderColor:C.red,tension:.3,pointRadius:0,borderWidth:2}
+ ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>money0(v/1e6)+'М'}}}}});
+}
+
+// ================= CF =================
+function renderCF(el){
+ const sc=scale(),rn=rng(111);
+ const weeks=['Нед 1','Нед 2','Нед 3','Нед 4','Нед 5','Нед 6'];
+ let bal=Math.round(R(0.6,1.0,rn)*sc*1e6); const bs=[],inn=[],out=[];
+ weeks.forEach(()=>{const i=Math.round(R(1.4,2.0,rn)*sc*1e6);const o=Math.round(R(1.3,2.1,rn)*sc*1e6);inn.push(i);out.push(-o);bal+=i-o;bs.push(Math.round(bal));});
+ const minBal=Math.min(...bs);
+ const opCF=Math.round(R(0.6,1.2,rn)*sc*1e6), invCF=-Math.round(R(0.1,0.5,rn)*sc*1e6), finCF=-Math.round(R(0.1,0.4,rn)*sc*1e6);
+ el.innerHTML=`<div class="grid k12" style="grid-template-columns:repeat(4,1fr)">
+   ${kpi('Остаток денег сейчас',mln(bs[bs.length-1]),'на конец периода','neu','💰')}
+   ${kpi('Операционный поток',mln(opCF),'от основной деятельности','up','↗')}
+   ${kpi('Инвестиционный поток',mln(invCF),'оборудование/ремонт','down','🔧')}
+   ${kpi('Финансовый поток',mln(finCF),'кредиты/дивиденды','down','🏦')}
+   ${kpi('Приток за период',mln(inn.reduce((a,b)=>a+b,0)),'выручка+поступления','up','↗')}
+   ${kpi('Отток за период',mln(Math.abs(out.reduce((a,b)=>a+b,0))),'закуп+ФОТ+аренда+налоги','down','↘')}
+   ${kpi('Конверсия прибыли в кэш',(R(75,110,rn)).toFixed(0)+'%','cash conversion','neu','🔄')}
+   ${kpi('Прогноз мин. остатка',mln(minBal),minBal<200000?'риск разрыва':'разрывов нет',minBal<200000?'down':'up','⚠')}
+ </div>
+ <div class="grid cards">
+   ${card('c8','Притоки / оттоки и остаток по неделям','iiko (касса) + банк',cb('cf_bar'))}
+   ${card('c4','Прогноз остатка 30/60/90 дней','банк + план платежей',cb('cf_fore','sm'))}
+   ${card('c12','Календарь обязательных платежей','банк + договоры',
+    `<table class="tbl"><thead><tr><th>Дата</th><th>Платёж</th><th class="num">Сумма</th><th>Статус</th></tr></thead><tbody>
+     <tr><td>20.07</td><td>Аренда · Точка 1</td><td class="num">${money0(Math.round(240000*sc))}</td><td><span class="pill pB">скоро</span></td></tr>
+     <tr><td>25.07</td><td>Зарплата (аванс)</td><td class="num">${money0(Math.round(410000*sc))}</td><td><span class="pill pB">скоро</span></td></tr>
+     <tr><td>28.07</td><td>Поставщик «Продукты» (отсрочка)</td><td class="num">${money0(Math.round(180000*sc))}</td><td><span class="pill pC">крупный</span></td></tr>
+     <tr><td>01.08</td><td>Налоги (УСН, взносы)</td><td class="num">${money0(Math.round(95000*sc))}</td><td><span class="pill pA">запас есть</span></td></tr>
+    </tbody></table>`)}
+ </div>`;
+ mk('cf_bar',{type:'bar',data:{labels:weeks,datasets:[{label:'Притоки',data:inn,backgroundColor:C.green},{label:'Оттоки',data:out,backgroundColor:C.red},{label:'Остаток',type:'line',data:bs,borderColor:C.blue,tension:.3,pointRadius:3,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>money0(v/1e6)+'М'}}}}});
+ mk('cf_fore',{type:'line',data:{labels:['сейчас','+30','+60','+90'],datasets:[{label:'Прогноз остатка',data:[bs[bs.length-1],Math.round(bs[bs.length-1]*R(0.9,1.2,rn)),Math.round(bs[bs.length-1]*R(0.8,1.3,rn)),Math.round(bs[bs.length-1]*R(0.85,1.4,rn))],borderColor:C.teal,backgroundColor:'rgba(43,180,201,.14)',fill:true,tension:.35,pointRadius:3,borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>money0(v/1e6)+'М'}}}}});
+}
+
+['fPeriod','fStore','fCmp','fRole'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{buildNav();renderActive();}));
+buildNav();renderActive();
+</script>
+</body>
+</html>
