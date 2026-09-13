@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="robots" content="noindex,nofollow,noarchive">
+ <meta name="description" content="ВИДИМ ДЕНЬГИ — финансовый кабинет">
+ <meta name="referrer" content="no-referrer">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'self';style-src 'self' 'unsafe-inline';img-src 'self' data:;connect-src 'self';font-src 'self';object-src 'none';base-uri 'none';form-action 'self'">
+ <title>ВИДИМ ДЕНЬГИ · Финансовый кабинет</title>
+ <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f1c32'/%3E%3Cpath d='M12 21l8 23 12-17 12 17 8-23' fill='none' stroke='%236eabff' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E">
+ <link rel="stylesheet" href="./styles.css">
+ <link rel="stylesheet" href="./reference.css">
+ <script type="module" src="./app.js"></script>
+</head>
+<body>
+ <a class="skip" href="#main">К содержимому</a>
+ <section id="login" class="login-screen">
+  <div class="login-card">
+   <div class="brand"><span class="brand-mark">W</span><span>ВИДИМ<br>ДЕНЬГИ</span></div>
+   <div class="login-copy"><span class="eyebrow">ФИНАНСОВЫЙ КАБИНЕТ</span><h1>Все деньги.<br>В поле зрения.</h1><p>Введите пароль для доступа к отчётам.</p></div>
+   <form id="login-form"><label for="password">Пароль</label><div class="password-field"><input id="password" type="password" autocomplete="current-password" required><button type="button" id="show-password" aria-label="Показать пароль">◉</button></div><button class="button primary login-submit" type="submit">Открыть кабинет <span>↗</span></button><p id="login-error" class="error" role="alert"></p></form>
+   <div class="login-foot"><span class="lock-symbol">⌑</span> Данные открываются только с вашим паролем</div>
+  </div>
+ </section>
+ <div id="app" hidden>
+  <div id="top-stack"><header class="topbar"><a class="brand" href="#overview" aria-label="ВИДИМ ДЕНЬГИ — свод"><span class="brand-mark">W</span><span>ВИДИМ ДЕНЬГИ<small>ФИНАНСОВЫЙ КАБИНЕТ</small></span></a><div id="global-filters"></div><div class="top-actions"><button class="icon-button" id="refresh-button" aria-label="Обновить данные кабинета" title="Проверить последнюю сохранённую версию данных">↻</button><button class="icon-button" id="lock-button" aria-label="Закрыть кабинет">⌑</button></div></header><div class="source-strip"><button id="source-button" class="strip-label">Источники</button><div id="source-chips"></div><span id="strip-update"></span></div></div>
+  <aside class="sidebar"><nav id="navigation" aria-label="Разделы"></nav><div class="side-bottom"><span class="year-label">2026</span><span>Управленческая<br>аналитика</span></div></aside>
+  <div class="workspace"><main id="main" tabindex="-1"><span id="crumb-title" hidden>Свод</span><div id="page"></div></main><footer class="app-footer"><span>ВИДИМ ДЕНЬГИ</span><span id="footer-update"></span></footer></div>
+ </div>
+ <dialog id="detail-dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button class="icon-button" id="close-dialog" aria-label="Закрыть">×</button></div><div id="dialog-body"></div></dialog>
+ <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+.sites-runtime/
+.env*
+!.env.example
+node_modules/
+*.private.json
+*.secret
+finance/data/*.plain.json
+finance/data/snapshot.json
+.DS_Store
+_site/

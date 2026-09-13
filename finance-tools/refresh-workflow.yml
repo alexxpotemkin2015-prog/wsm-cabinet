@@ -1,0 +1,51 @@
+name: Finance daily refresh
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * *' # 07:00 Europe/Moscow. GitHub may start scheduled jobs later.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: finance-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: vars.FINANCE_REFRESH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      FINANCE_SOURCES_JSON: ${{ secrets.FINANCE_SOURCES_JSON }}
+      FINANCE_ENCRYPTION_JSON: ${{ secrets.FINANCE_ENCRYPTION_JSON }}
+      FINANCE_QUIET: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read the five Google workbooks
+        run: node finance-tools/refresh-google.mjs "${{ runner.temp }}/finance-input"
+      - name: Build and validate the snapshot
+        run: |
+          node finance-tools/build-snapshot.mjs "${{ runner.temp }}/finance-input" "${{ runner.temp }}/snapshot.private.json"
+          node finance-tools/verify-snapshot.mjs "${{ runner.temp }}/snapshot.private.json"
+          node finance-tools/encrypt-snapshot.mjs "${{ runner.temp }}/snapshot.private.json" "${{ runner.temp }}/unused.secret" finance/data/snapshot.enc.json
+      - name: Save encrypted snapshot
+        run: |
+          git config user.name 'Finance refresh'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add finance/data/snapshot.enc.json
+          git commit -m 'Refresh encrypted financial snapshot'
+          git push
+      - name: Export public site
+        run: node finance-tools/export-public-site.mjs _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
